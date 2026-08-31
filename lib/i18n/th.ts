@@ -28,6 +28,7 @@ const th: Dictionary = {
     nothingHere: 'ยังไม่มีอะไรตรงนี้',
     collection: 'คอลเลกชัน',
     dismiss: 'ปิด',
+    navLimit: 'ไม่สามารถเลื่อนเกิน 10 ปีจากวันนี้ได้',
   },
   dates: {
     months: [
@@ -48,6 +49,7 @@ const th: Dictionary = {
       future: 'บันทึกอนาคต',
       monthly: 'บันทึกรายเดือน',
       weekly: 'บันทึกรายสัปดาห์',
+      review: 'ทบทวน',
     },
     legend: {
       task: 'งาน',
@@ -112,8 +114,12 @@ const th: Dictionary = {
     monthsAheadTitle: 'เดือนข้างหน้า',
     futureLogLink: 'บันทึกอนาคต',
     recentActivityTitle: 'กิจกรรมล่าสุด',
+    recentActivityHint: 'แตะรายการเพื่อไปที่หน้าที่มันอยู่โดยตรง',
     keyTitle: 'สัญลักษณ์',
     couldNotReach: 'ไม่สามารถเชื่อมต่อ API ของบันทึกได้',
+    reviewBanner: (n) => `มี ${n} รายการที่ควรทบทวนอีกครั้ง`,
+    reviewBannerBlurb: 'งานจากวันและเดือนที่ผ่านไปแล้ว — ทำเครื่องหมายว่าเสร็จ ย้ายไปข้างหน้า หรือปล่อยผ่าน',
+    reviewBannerCta: 'ทบทวนตอนนี้',
     blurbs: {
       future: 'ทุกอย่างที่กำหนดไว้เกินเดือนนี้',
       monthly: 'ปฏิทินและงานของเดือนนี้',
@@ -158,6 +164,19 @@ const th: Dictionary = {
     nextWeek: 'สัปดาห์ถัดไป',
     thisWeek: 'สัปดาห์นี้',
     add: 'เพิ่ม…',
+  },
+  review: {
+    eyebrow: 'ทบทวน',
+    title: 'ทบทวนและย้ายงาน',
+    subtitleEmpty: 'จัดการงานจากวันและเดือนที่ผ่านไปแล้วครบหมดแล้ว',
+    subtitleCount: (n) => `มี ${n} รายการรอการตัดสินใจ`,
+    allClear: 'เคลียร์หมดแล้ว — ไม่มีอะไรต้องทบทวน',
+    pastDaysTitle: 'จากวันที่ผ่านไปแล้ว',
+    pastDaysBlurb: 'ยังค้างอยู่จากวันที่ผ่านไปแล้ว — ทำเครื่องหมายว่าเสร็จ ย้ายไปวันนี้หรือวันอื่น หรือปล่อยผ่าน',
+    pastMonthsTitle: 'จากเดือนที่ผ่านไปแล้ว',
+    pastMonthsBlurb: 'ยังค้างอยู่ตอนที่เดือนนั้นจบลง',
+    arrivedTitle: 'ถึงกำหนดจากบันทึกอนาคต',
+    arrivedBlurb: 'เดือนของรายการเหล่านี้เริ่มแล้ว — ย้ายเข้าบันทึกรายเดือน รายสัปดาห์ หรือวันใดวันหนึ่ง',
   },
   collections: {
     eyebrow: 'คอลเลกชัน',
@@ -233,6 +252,9 @@ const th: Dictionary = {
     shorthandTitle: 'พิมพ์ลัดตอนเพิ่มรายการ',
     shorthandIntro: 'พิมพ์นำหน้าในช่องเพิ่มรายการ ก่อนกด Enter:',
     shorthandExample: 'ตัวอย่าง: พิมพ์ "* โทรหาธนาคาร" จะได้งานสำคัญ',
+    reviewTitle: 'ทบทวนและย้ายงาน',
+    reviewIntro:
+      'พิธีกรรมดั้งเดิมของ Bullet Journal — เป็นระยะๆ ให้เปิดเมนู "ทบทวน" แล้วตัดสินใจทีละรายการที่ค้างจากวันหรือเดือนที่ผ่านไปแล้วว่า เสร็จแล้ว ย้ายไปข้างหน้า หรือปล่อยผ่าน',
     shorthandRows: {
       priority: ['*', 'สำคัญ'],
       inspiration: ['!', 'ไอเดีย'],

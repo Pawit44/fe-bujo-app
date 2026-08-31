@@ -15,6 +15,7 @@ import {
   Music,
   Plane,
   Receipt,
+  RotateCcw,
   Rows3,
   Sprout,
   Star,
@@ -29,6 +30,7 @@ export const LOG_ICONS = {
   future: CalendarRange,
   monthly: CalendarDays,
   weekly: Rows3,
+  review: RotateCcw,
 } satisfies Record<string, LucideIcon>;
 
 /**

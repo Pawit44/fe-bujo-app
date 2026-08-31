@@ -48,28 +48,30 @@ export const viewport: Viewport = {
  * the @font-face rules inline and serves the files from the app's own origin,
  * so first paint no longer waits on Google.
  *
- * Latin faces are preloaded because the app chrome always uses them. The two
- * Thai faces are not: they only matter once Thai text is on screen, and the
- * default locale is English, so preloading them would spend bandwidth before
- * first paint that most sessions never need.
+ * The Thai faces are preloaded because DEFAULT_LOCALE is 'th' — that's what
+ * paints on first load for anyone without a saved preference, which is most
+ * first visits. The Latin faces still load (the brand name, digits, and an
+ * English-locale session all need them) but not before first paint, since
+ * the default session doesn't need them yet.
  */
 const inter = Inter({
   subsets: ['latin'],
   variable: '--font-inter',
   display: 'swap',
+  preload: false,
 });
 
 const newsreader = Newsreader({
   subsets: ['latin'],
   variable: '--font-newsreader',
   display: 'swap',
+  preload: false,
 });
 
 const notoSansThai = Noto_Sans_Thai({
   subsets: ['thai'],
   variable: '--font-noto-thai',
   display: 'swap',
-  preload: false,
 });
 
 const kanit = Kanit({
@@ -77,7 +79,6 @@ const kanit = Kanit({
   weight: ['300', '400', '500', '600'],
   variable: '--font-kanit',
   display: 'swap',
-  preload: false,
 });
 
 const fontVariables = [inter, newsreader, notoSansThai, kanit].map((f) => f.variable).join(' ');

@@ -69,6 +69,8 @@ export interface IndexOverview {
   futureMonths: MonthSummary[];
   collections: Collection[];
   recent: Entry[];
+  /** Open entries whose spread has already passed — badge count for Review. */
+  dueForReview: number;
   totals: { entries: number; done: number };
 }
 

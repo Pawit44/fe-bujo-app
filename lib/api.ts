@@ -87,6 +87,10 @@ export const api = {
   entries: (params: Record<string, string | number | undefined | null> = {}) =>
     request<Entry[]>(`/entries${query(params)}`),
 
+  // Open entries from a spread that has already passed — the material for
+  // the Review page's daily-reflection / migration ritual.
+  dueEntries: () => request<Entry[]>('/entries/review'),
+
   createEntry: (draft: EntryDraft) =>
     request<Entry>('/entries', { method: 'POST', body: JSON.stringify(draft) }),
 

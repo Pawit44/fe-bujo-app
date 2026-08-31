@@ -1,28 +1,60 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { Suspense, useEffect, useMemo, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import EntryList from '@/components/EntryList';
 import ErrorToast from '@/components/ErrorToast';
-import { api } from '@/lib/api';
 import {
   addMonths,
   currentMonthISO,
   formatDayLong,
   formatMonth,
+  isMonthInRange,
   isToday,
   isWeekend,
   monthGrid,
   todayISO,
 } from '@/lib/date';
+import { useCollections } from '@/lib/useCollections';
 import { useEntries } from '@/lib/useEntries';
 import { useI18n } from '@/lib/i18n';
-import type { Collection } from '@/lib/types';
 
+const MONTH_RE = /^\d{4}-\d{2}$/;
+const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+
+/** `?month=YYYY-MM` or `?date=YYYY-MM-DD` deep-links here from the Index
+ * page — without it, a task added a few months out was unreachable from a
+ * click: the page always opened on the current month, and there was no way
+ * to jump straight to where the entry actually lives. */
+function initialView(params: URLSearchParams): { month: string; selected: string } {
+  const dateParam = params.get('date');
+  if (dateParam && DATE_RE.test(dateParam) && isMonthInRange(dateParam.slice(0, 7))) {
+    return { month: dateParam.slice(0, 7), selected: dateParam };
+  }
+  const monthParam = params.get('month');
+  if (monthParam && MONTH_RE.test(monthParam) && isMonthInRange(monthParam)) {
+    return { month: monthParam, selected: `${monthParam}-01` };
+  }
+  return { month: currentMonthISO(), selected: todayISO() };
+}
+
+// useSearchParams needs a Suspense boundary, otherwise the whole route opts
+// out of static prerendering.
 export default function MonthlyLogPage() {
+  return (
+    <Suspense>
+      <MonthlyLog />
+    </Suspense>
+  );
+}
+
+function MonthlyLog() {
   const { t } = useI18n();
-  const [month, setMonth] = useState(currentMonthISO());
-  const [selected, setSelected] = useState<string>(todayISO());
-  const [collections, setCollections] = useState<Collection[]>([]);
+  const searchParams = useSearchParams();
+  const [{ month: initialMonth, selected: initialSelected }] = useState(() => initialView(searchParams));
+  const [month, setMonth] = useState(initialMonth);
+  const [selected, setSelected] = useState<string>(initialSelected);
+  const collections = useCollections();
 
   const { blanks, days } = useMemo(() => monthGrid(month), [month]);
   const rangeStart = days[0];
@@ -30,10 +62,6 @@ export default function MonthlyLogPage() {
 
   const monthly = useEntries({ logKind: 'monthly', month });
   const daily = useEntries({ logKind: 'weekly', from: rangeStart, to: rangeEnd });
-
-  useEffect(() => {
-    api.collections().then(setCollections).catch(() => undefined);
-  }, []);
 
   // Keep the selected day inside the month being viewed.
   useEffect(() => {
@@ -67,14 +95,20 @@ export default function MonthlyLogPage() {
           <button
             className="btn btn-icon"
             onClick={() => setMonth(addMonths(month, -1))}
-            title={t.monthly.previousMonth}
+            disabled={!isMonthInRange(addMonths(month, -1))}
+            title={isMonthInRange(addMonths(month, -1)) ? t.monthly.previousMonth : t.common.navLimit}
           >
             ‹
           </button>
           <button className="btn btn-sm" onClick={() => setMonth(currentMonthISO())}>
             {t.monthly.thisMonth}
           </button>
-          <button className="btn btn-icon" onClick={() => setMonth(addMonths(month, 1))} title={t.monthly.nextMonth}>
+          <button
+            className="btn btn-icon"
+            onClick={() => setMonth(addMonths(month, 1))}
+            disabled={!isMonthInRange(addMonths(month, 1))}
+            title={isMonthInRange(addMonths(month, 1)) ? t.monthly.nextMonth : t.common.navLimit}
+          >
             ›
           </button>
         </div>

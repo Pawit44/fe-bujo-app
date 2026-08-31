@@ -1,25 +1,41 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { Suspense, useMemo, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import EntryList from '@/components/EntryList';
 import ErrorToast from '@/components/ErrorToast';
-import { api } from '@/lib/api';
-import { addMonths, currentMonthISO, formatMonth } from '@/lib/date';
+import { addMonths, currentMonthISO, formatMonth, isMonthInRange } from '@/lib/date';
+import { useCollections } from '@/lib/useCollections';
 import { useEntries } from '@/lib/useEntries';
 import { useI18n } from '@/lib/i18n';
-import type { Collection } from '@/lib/types';
 
 const SPAN = 12; // months shown at once
 
-export default function FutureLogPage() {
-  const { t } = useI18n();
-  const [start, setStart] = useState(currentMonthISO());
-  const [collections, setCollections] = useState<Collection[]>([]);
-  const journal = useEntries({ logKind: 'future' });
+/** `?month=YYYY-MM` deep-links here (from the Index page's recent-activity
+ * and "months ahead" lists) straight to the month that holds a given entry —
+ * a plain `/future` would default to the current month and leave anything
+ * further out effectively unfindable without paging forward by hand. */
+function initialStart(param: string | null): string {
+  if (param && /^\d{4}-\d{2}$/.test(param) && isMonthInRange(param)) return param;
+  return currentMonthISO();
+}
 
-  useEffect(() => {
-    api.collections().then(setCollections).catch(() => undefined);
-  }, []);
+// useSearchParams needs a Suspense boundary, otherwise the whole route opts
+// out of static prerendering.
+export default function FutureLogPage() {
+  return (
+    <Suspense>
+      <FutureLog />
+    </Suspense>
+  );
+}
+
+function FutureLog() {
+  const { t } = useI18n();
+  const monthParam = useSearchParams().get('month');
+  const [start, setStart] = useState(() => initialStart(monthParam));
+  const collections = useCollections();
+  const journal = useEntries({ logKind: 'future' });
 
   const months = useMemo(
     () => Array.from({ length: SPAN }, (_, i) => addMonths(start, i)),
@@ -37,6 +53,12 @@ export default function FutureLogPage() {
 
   const planned = months.reduce((n, m) => n + (byMonth[m]?.length ?? 0), 0);
   const now = currentMonthISO();
+  // A step back is blocked once the new window's *earliest* month would fall
+  // outside ±10 years; a step forward, once its *latest* month would. Only
+  // the far edge of the new window needs checking — if that edge is still
+  // in range, everything between it and today is too.
+  const canGoBack = isMonthInRange(addMonths(start, -SPAN));
+  const canGoForward = isMonthInRange(addMonths(start, SPAN + SPAN - 1));
 
   return (
     <div className="page">
@@ -54,14 +76,20 @@ export default function FutureLogPage() {
           <button
             className="btn btn-icon"
             onClick={() => setStart(addMonths(start, -SPAN))}
-            title={t.future.previousYear}
+            disabled={!canGoBack}
+            title={canGoBack ? t.future.previousYear : t.common.navLimit}
           >
             ‹
           </button>
           <button className="btn btn-sm" onClick={() => setStart(currentMonthISO())}>
             {t.common.today}
           </button>
-          <button className="btn btn-icon" onClick={() => setStart(addMonths(start, SPAN))} title={t.future.nextYear}>
+          <button
+            className="btn btn-icon"
+            onClick={() => setStart(addMonths(start, SPAN))}
+            disabled={!canGoForward}
+            title={canGoForward ? t.future.nextYear : t.common.navLimit}
+          >
             ›
           </button>
         </div>

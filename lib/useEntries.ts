@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { api } from './api';
+import { invalidateOverview } from './useOverview';
 import type { Entry, EntryDraft, MigrateTarget } from './types';
 
 type Params = Record<string, string | number | undefined | null>;
@@ -65,6 +66,7 @@ export function useEntries(params: Params) {
       try {
         const saved = await api.createEntry(draft);
         setEntries((prev) => prev.map((e) => (e.id === optimistic.id ? saved : e)));
+        invalidateOverview(); // a new entry changes this log's totals on the Index page
         return saved;
       } catch (e) {
         setEntries((prev) => prev.filter((x) => x.id !== optimistic.id));
@@ -92,6 +94,7 @@ export function useEntries(params: Params) {
     try {
       const saved = await api.toggleEntry(entry.id);
       setEntries((prev) => prev.map((e) => (e.id === entry.id ? saved : e)));
+      invalidateOverview(); // done/open counts on the Index page and Review's badge both depend on this
     } catch (e) {
       setEntries((prev) => prev.map((x) => (x.id === entry.id ? entry : x)));
       setError((e as Error).message);
@@ -102,6 +105,7 @@ export function useEntries(params: Params) {
     setEntries((prev) => prev.filter((e) => e.id !== entry.id));
     try {
       await api.deleteEntry(entry.id);
+      invalidateOverview();
     } catch (e) {
       setEntries((prev) => [...prev, entry].sort((a, b) => a.position - b.position));
       setError((e as Error).message);
@@ -112,6 +116,7 @@ export function useEntries(params: Params) {
     async (entry: Entry, target: MigrateTarget) => {
       try {
         await api.migrateEntry(entry.id, target);
+        invalidateOverview(); // moved to a different log/month/week — every count downstream shifts
       } catch (e) {
         setError((e as Error).message);
       }

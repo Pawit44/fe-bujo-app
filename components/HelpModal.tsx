@@ -1,6 +1,6 @@
 'use client';
 
-import { Sparkles, Star } from 'lucide-react';
+import { RotateCcw, Sparkles, Star } from 'lucide-react';
 import { useI18n } from '@/lib/i18n';
 import Modal from './Modal';
 
@@ -72,6 +72,16 @@ export default function HelpModal({ onClose }: { onClose: () => void }) {
           </div>
           <p className="muted" style={{ fontSize: 12.5, marginTop: 10 }}>
             {t.help.shorthandExample}
+          </p>
+        </div>
+
+        <div className="help-section">
+          <div className="eyebrow" style={{ marginBottom: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
+            <RotateCcw size={12} strokeWidth={2} />
+            {t.help.reviewTitle}
+          </div>
+          <p className="muted" style={{ fontSize: 12.5 }}>
+            {t.help.reviewIntro}
           </p>
         </div>
 

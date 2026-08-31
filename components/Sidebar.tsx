@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { CircleHelp, Leaf, LogOut, Menu, Moon, Plus, ShieldCheck, Sun, Trash2, X } from 'lucide-react';
 import { useCollections } from '@/lib/useCollections';
+import { useOverview } from '@/lib/useOverview';
 import { useI18n, LOCALES } from '@/lib/i18n';
 import { useTheme } from '@/lib/ThemeProvider';
 import { useAuth } from '@/lib/AuthProvider';
@@ -22,6 +23,7 @@ const THEME_ICONS = { paper: Sun, dusk: Moon, sage: Leaf } as const;
 export default function Sidebar() {
   const pathname = usePathname();
   const collections = useCollections();
+  const { data: overview } = useOverview();
   const [helpOpen, setHelpOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -30,10 +32,14 @@ export default function Sidebar() {
   const { user, logout } = useAuth();
 
   const LOGS = [
-    { href: '/', icon: LOG_ICONS.index, label: t.sidebar.logs.index },
-    { href: '/future', icon: LOG_ICONS.future, label: t.sidebar.logs.future },
-    { href: '/monthly', icon: LOG_ICONS.monthly, label: t.sidebar.logs.monthly },
-    { href: '/weekly', icon: LOG_ICONS.weekly, label: t.sidebar.logs.weekly },
+    { href: '/', icon: LOG_ICONS.index, label: t.sidebar.logs.index, count: 0 },
+    { href: '/future', icon: LOG_ICONS.future, label: t.sidebar.logs.future, count: 0 },
+    { href: '/monthly', icon: LOG_ICONS.monthly, label: t.sidebar.logs.monthly, count: 0 },
+    { href: '/weekly', icon: LOG_ICONS.weekly, label: t.sidebar.logs.weekly, count: 0 },
+    // The migration ritual, surfaced as a badge — a number here is the whole
+    // point: it's what tells the reader there's something to reflect on
+    // without having to open every log to check.
+    { href: '/review', icon: LOG_ICONS.review, label: t.sidebar.logs.review, count: overview?.dueForReview ?? 0 },
   ];
 
   // A route change means a nav link was just followed — close the mobile drawer.
@@ -128,6 +134,7 @@ export default function Sidebar() {
               <item.icon size={17} strokeWidth={1.8} />
             </span>
             {item.label}
+            {item.count > 0 && <span className="nav-count nav-count-attention">{item.count}</span>}
           </Link>
         ))}
       </nav>

@@ -1,25 +1,52 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { Suspense, useMemo, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import EntryList from '@/components/EntryList';
 import ErrorToast from '@/components/ErrorToast';
-import { api } from '@/lib/api';
-import { addDays, formatRange, fromISODate, isToday, isWeekend, startOfWeek, toISODate, weekDays } from '@/lib/date';
+import {
+  addDays,
+  formatRange,
+  fromISODate,
+  isDateInRange,
+  isToday,
+  isWeekend,
+  startOfWeek,
+  toISODate,
+  weekDays,
+} from '@/lib/date';
+import { useCollections } from '@/lib/useCollections';
 import { useEntries } from '@/lib/useEntries';
 import { useI18n } from '@/lib/i18n';
-import type { Collection } from '@/lib/types';
 
+const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+
+/** `?date=YYYY-MM-DD` deep-links here to the week that contains that day —
+ * the Index page's recent-activity list uses this to point at a specific
+ * entry instead of just landing on the current week. */
+function initialAnchor(param: string | null): string {
+  if (param && DATE_RE.test(param) && isDateInRange(param)) return toISODate(startOfWeek(fromISODate(param)));
+  return toISODate(startOfWeek(new Date()));
+}
+
+// useSearchParams needs a Suspense boundary, otherwise the whole route opts
+// out of static prerendering.
 export default function WeeklyLogPage() {
+  return (
+    <Suspense>
+      <WeeklyLog />
+    </Suspense>
+  );
+}
+
+function WeeklyLog() {
   const { t } = useI18n();
-  const [anchor, setAnchor] = useState(() => toISODate(startOfWeek(new Date())));
-  const [collections, setCollections] = useState<Collection[]>([]);
+  const dateParam = useSearchParams().get('date');
+  const [anchor, setAnchor] = useState(() => initialAnchor(dateParam));
+  const collections = useCollections();
 
   const days = useMemo(() => weekDays(fromISODate(anchor)), [anchor]);
   const journal = useEntries({ logKind: 'weekly', from: days[0], to: days[6] });
-
-  useEffect(() => {
-    api.collections().then(setCollections).catch(() => undefined);
-  }, []);
 
   const byDay = useMemo(() => {
     const map: Record<string, typeof journal.entries> = {};
@@ -33,6 +60,9 @@ export default function WeeklyLogPage() {
   const open = journal.entries.filter((e) => e.status === 'open').length;
   const done = journal.entries.filter((e) => e.status === 'done').length;
   const shift = (weeks: number) => setAnchor(toISODate(addDays(fromISODate(anchor), weeks * 7)));
+  // The far edge of the week being shifted to — day 0 going back, day 6 going forward.
+  const canGoBack = isDateInRange(toISODate(addDays(fromISODate(anchor), -7)));
+  const canGoForward = isDateInRange(toISODate(addDays(fromISODate(anchor), 13)));
 
   return (
     <div className="page">
@@ -46,13 +76,23 @@ export default function WeeklyLogPage() {
         </div>
 
         <div className="head-actions">
-          <button className="btn btn-icon" onClick={() => shift(-1)} title={t.weekly.previousWeek}>
+          <button
+            className="btn btn-icon"
+            onClick={() => shift(-1)}
+            disabled={!canGoBack}
+            title={canGoBack ? t.weekly.previousWeek : t.common.navLimit}
+          >
             ‹
           </button>
           <button className="btn btn-sm" onClick={() => setAnchor(toISODate(startOfWeek(new Date())))}>
             {t.weekly.thisWeek}
           </button>
-          <button className="btn btn-icon" onClick={() => shift(1)} title={t.weekly.nextWeek}>
+          <button
+            className="btn btn-icon"
+            onClick={() => shift(1)}
+            disabled={!canGoForward}
+            title={canGoForward ? t.weekly.nextWeek : t.common.navLimit}
+          >
             ›
           </button>
         </div>

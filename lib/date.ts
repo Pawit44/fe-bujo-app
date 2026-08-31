@@ -98,3 +98,32 @@ export function isWeekend(iso: string): boolean {
   const day = fromISODate(iso).getDay();
   return day === 0 || day === 6;
 }
+
+/**
+ * How far back or forward a reader can navigate the Monthly, Future and
+ * Weekly logs from today.
+ *
+ * A bullet journal is meant to be a record of *this* stretch of a life, not
+ * an infinite calendar — nothing in the data model needed a limit, but
+ * without one a stray tap on "next month" is indistinguishable from a typo:
+ * both silently leave you decades away with no landmark to get back. Ten
+ * years comfortably covers "look back at where I was" and "plan the future"
+ * without turning the log into a generic calendar app.
+ */
+export const MAX_NAV_YEARS = 10;
+
+function monthIndex(monthISO: string): number {
+  const [y, m] = monthISO.split('-').map(Number);
+  return y * 12 + (m - 1);
+}
+
+/** True while monthISO is within MAX_NAV_YEARS of the current month. */
+export function isMonthInRange(monthISO: string): boolean {
+  return Math.abs(monthIndex(monthISO) - monthIndex(currentMonthISO())) <= MAX_NAV_YEARS * 12;
+}
+
+/** True while iso is within MAX_NAV_YEARS of today. */
+export function isDateInRange(iso: string): boolean {
+  const days = Math.round((fromISODate(iso).getTime() - fromISODate(todayISO()).getTime()) / 86_400_000);
+  return Math.abs(days) <= MAX_NAV_YEARS * 366; // 366: never cuts a leap-year stretch short
+}

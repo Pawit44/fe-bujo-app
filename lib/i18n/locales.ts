@@ -4,7 +4,7 @@ import th from './th';
 
 export type Locale = 'en' | 'th';
 
-export const DEFAULT_LOCALE: Locale = 'en';
+export const DEFAULT_LOCALE: Locale = 'th';
 export const LOCALE_STORAGE_KEY = 'bujo:locale';
 
 export const LOCALES: { id: Locale; nativeName: string }[] = [

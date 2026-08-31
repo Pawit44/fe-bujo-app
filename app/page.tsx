@@ -1,19 +1,46 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
-import { AlertTriangle } from 'lucide-react';
-import { api } from '@/lib/api';
-import { formatMonth, formatMonthShort, formatRange, fromISODate } from '@/lib/date';
+import { AlertTriangle, RotateCcw } from 'lucide-react';
+import { formatDayLong, formatMonth, formatMonthShort, formatRange, fromISODate } from '@/lib/date';
 import { glyphFor } from '@/components/Bullet';
 import { useI18n } from '@/lib/i18n';
+import { useOverview } from '@/lib/useOverview';
 import { CollectionIcon, LOG_ICONS } from '@/components/icons';
-import type { IndexOverview } from '@/lib/types';
+import type { Entry, IndexOverview } from '@/lib/types';
+
+/** Where tapping this entry on the Index page should take you — the exact
+ * spot it lives, not just the log in general, so a task added three months
+ * out is one tap away instead of requiring the reader to guess and page
+ * forward by hand. */
+function entryHref(entry: Entry): string {
+  switch (entry.logKind) {
+    case 'weekly':
+      return `/weekly?date=${entry.date}`;
+    case 'monthly':
+      return `/monthly?month=${entry.month}`;
+    case 'future':
+      return `/future?month=${entry.month}`;
+    case 'collection':
+      return entry.collectionId ? `/collections/${entry.collectionId}` : '/collections';
+  }
+}
+
+/** The most recently-touched entry that actually belongs to this log card,
+ * so the card shows *which* entry its count refers to instead of a bare
+ * number the reader has to click through to identify. */
+function previewFor(logKey: string, data: IndexOverview): Entry | undefined {
+  return data.recent.find((e) => {
+    if (e.logKind !== logKey) return false;
+    if (logKey === 'monthly') return e.month === data.month;
+    if (logKey === 'weekly') return e.date >= data.weekStart && e.date <= data.weekEnd;
+    return true;
+  });
+}
 
 export default function IndexPage() {
   const { t } = useI18n();
-  const [data, setData] = useState<IndexOverview | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const { data, loading } = useOverview();
 
   const LOG_META: Record<string, { href: string; Icon: (typeof LOG_ICONS)[keyof typeof LOG_ICONS]; blurb: string; label: string }> = {
     future: { href: '/future', Icon: LOG_ICONS.future, blurb: t.index.blurbs.future, label: t.sidebar.logs.future },
@@ -21,11 +48,24 @@ export default function IndexPage() {
     weekly: { href: '/weekly', Icon: LOG_ICONS.weekly, blurb: t.index.blurbs.weekly, label: t.sidebar.logs.weekly },
   };
 
-  useEffect(() => {
-    api.overview().then(setData).catch((e) => setError((e as Error).message));
-  }, []);
+  /** The small tag under a recent-activity entry — which log it's in, and
+   * exactly where: a day, a month, or a collection's own name. */
+  function recentMeta(entry: Entry): string {
+    switch (entry.logKind) {
+      case 'weekly':
+        return formatDayLong(entry.date, t.dates.months, t.dates.days);
+      case 'monthly':
+        return `${t.sidebar.logs.monthly} · ${formatMonth(entry.month, t.dates.months)}`;
+      case 'future':
+        return `${t.sidebar.logs.future} · ${formatMonth(entry.month, t.dates.months)}`;
+      case 'collection': {
+        const col = data?.collections.find((c) => c.id === entry.collectionId);
+        return col ? col.title : t.common.collection;
+      }
+    }
+  }
 
-  if (error) {
+  if (!loading && !data) {
     return (
       <div className="page">
         <div className="empty empty-lg">
@@ -33,7 +73,6 @@ export default function IndexPage() {
             <AlertTriangle size={26} strokeWidth={1.5} />
           </div>
           {t.index.couldNotReach}
-          <div style={{ marginTop: 6, fontSize: 12 }}>{error}</div>
         </div>
       </div>
     );
@@ -80,12 +119,26 @@ export default function IndexPage() {
         </div>
       </header>
 
+      {data.dueForReview > 0 && (
+        <Link href="/review" className="review-banner">
+          <span className="review-banner-icon">
+            <RotateCcw size={18} strokeWidth={1.8} />
+          </span>
+          <div className="review-banner-body">
+            <div className="review-banner-title">{t.index.reviewBanner(data.dueForReview)}</div>
+            <div className="review-banner-blurb">{t.index.reviewBannerBlurb}</div>
+          </div>
+          <span className="review-banner-cta">{t.index.reviewBannerCta} →</span>
+        </Link>
+      )}
+
       <section className="grid grid-3" style={{ marginBottom: 26 }}>
         {data.logs.map((log) => {
           const meta = LOG_META[log.key];
           const pct = log.total ? Math.round((log.done / log.total) * 100) : 0;
+          const preview = previewFor(log.key, data);
           return (
-            <Link key={log.key} href={meta.href} className="log-card">
+            <Link key={log.key} href={preview ? entryHref(preview) : meta.href} className="log-card">
               <div className="log-card-top">
                 <div className="log-glyph">
                   <meta.Icon size={19} strokeWidth={1.8} />
@@ -103,6 +156,13 @@ export default function IndexPage() {
                       ? formatRange(data.weekStart, data.weekEnd, t.dates.months)
                       : meta.blurb}
                 </div>
+                {/* The point of this line: answer "which one?" right where the
+                    count is shown, instead of making that a click-through question. */}
+                {preview && (
+                  <div className="log-card-preview" title={preview.content}>
+                    “{preview.content}”
+                  </div>
+                )}
               </div>
               <div className="bar">
                 <span style={{ width: `${pct}%` }} />
@@ -172,27 +232,21 @@ export default function IndexPage() {
         <section className="card" style={{ marginTop: 18 }}>
           <div className="card-head">
             <h2 className="card-title">{t.index.recentActivityTitle}</h2>
+            <span className="muted recent-activity-hint" style={{ fontSize: 12 }}>
+              {t.index.recentActivityHint}
+            </span>
           </div>
-          <div style={{ padding: '10px 14px' }}>
+          <div style={{ padding: '4px 8px 8px' }}>
             {data.recent.map((entry) => (
-              <div key={entry.id} className="entry">
-                <span
-                  className={`bullet ${entry.status} type-${entry.type}`}
-                  style={{ pointerEvents: 'none' }}
-                >
+              <Link key={entry.id} href={entryHref(entry)} className={`entry recent-entry ${entry.status}`}>
+                <span className={`bullet ${entry.status} type-${entry.type}`} style={{ pointerEvents: 'none' }}>
                   {glyphFor(entry.type, entry.status)}
                 </span>
                 <div className="entry-body">
                   <span className="entry-text">{entry.content}</span>
-                  <div className="entry-meta">
-                    {entry.logKind === 'weekly'
-                      ? entry.date
-                      : entry.logKind === 'collection'
-                        ? t.common.collection
-                        : entry.month || entry.logKind}
-                  </div>
+                  <div className="entry-meta">{recentMeta(entry)}</div>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         </section>

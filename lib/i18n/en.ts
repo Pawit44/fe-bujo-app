@@ -31,6 +31,7 @@ const en = {
     nothingHere: 'Nothing here yet.',
     collection: 'collection',
     dismiss: 'Dismiss',
+    navLimit: "You can't go further than 10 years from today.",
   },
   dates: {
     months: [
@@ -51,6 +52,7 @@ const en = {
       future: 'Future Log',
       monthly: 'Monthly Log',
       weekly: 'Weekly Log',
+      review: 'Review',
     },
     legend: {
       task: 'task',
@@ -115,8 +117,12 @@ const en = {
     monthsAheadTitle: 'Months ahead',
     futureLogLink: 'Future log',
     recentActivityTitle: 'Recent activity',
+    recentActivityHint: 'Tap any entry to jump straight to where it lives.',
     keyTitle: 'Key',
     couldNotReach: 'Could not reach the journal API.',
+    reviewBanner: (n: number) => `${n} ${n === 1 ? 'entry needs' : 'entries need'} a second look`,
+    reviewBannerBlurb: 'Tasks from days and months that have already passed — mark them done, move them forward, or let them go.',
+    reviewBannerCta: 'Review now',
     blurbs: {
       future: 'Everything scheduled beyond this month',
       monthly: 'The calendar and task page for this month',
@@ -161,6 +167,19 @@ const en = {
     nextWeek: 'Next week',
     thisWeek: 'This week',
     add: 'Add…',
+  },
+  review: {
+    eyebrow: 'Review',
+    title: 'Review & migrate',
+    subtitleEmpty: 'Everything from past days and months has been dealt with.',
+    subtitleCount: (n: number) => `${n} ${n === 1 ? 'entry is' : 'entries are'} waiting for a decision.`,
+    allClear: "All clear — nothing left to review.",
+    pastDaysTitle: 'From days that have passed',
+    pastDaysBlurb: 'Still open from a day already behind you — mark it done, move it to today or later, or drop it.',
+    pastMonthsTitle: 'From months that have passed',
+    pastMonthsBlurb: 'Left open when the month it belonged to ended.',
+    arrivedTitle: 'Arrived from the Future Log',
+    arrivedBlurb: 'Their month has started — migrate each into the Monthly or Weekly log, or a specific day.',
   },
   collections: {
     eyebrow: 'Collections',
@@ -237,6 +256,9 @@ const en = {
     shorthandTitle: 'Quick-add shorthand',
     shorthandIntro: 'Typed at the start of the capture line, before you press Enter:',
     shorthandExample: 'Example: typing "* call the bank" adds a priority task.',
+    reviewTitle: 'Review & migrate',
+    reviewIntro:
+      'The traditional bullet-journal ritual: every so often, open Review in the sidebar and decide, for each task left over from a past day or month — done, move it forward, or let it go.',
     shorthandRows: {
       priority: ['*', 'Priority'],
       inspiration: ['!', 'Inspiration'],
