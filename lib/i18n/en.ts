@@ -32,6 +32,7 @@ const en = {
     collection: 'collection',
     dismiss: 'Dismiss',
     navLimit: "You can't go further than 10 years from today.",
+    somethingWentWrong: 'Something went wrong. Please try again.',
   },
   dates: {
     months: [
@@ -116,7 +117,7 @@ const en = {
     noCollectionsYet: 'No collections yet — start one from the Collections page.',
     monthsAheadTitle: 'Months ahead',
     futureLogLink: 'Future log',
-    recentActivityTitle: 'Recent activity',
+    recentActivityTitle: "This month's activity",
     recentActivityHint: 'Tap any entry to jump straight to where it lives.',
     keyTitle: 'Key',
     couldNotReach: 'Could not reach the journal API.',
@@ -171,15 +172,27 @@ const en = {
   review: {
     eyebrow: 'Review',
     title: 'Review & migrate',
+    intro:
+      'The bullet-journal habit of looking back: instead of hunting through old weeks and months for anything left unfinished, everything still open from the past is collected here. For each one, pick exactly one thing — done, move it forward, or drop it — and it leaves this list.',
     subtitleEmpty: 'Everything from past days and months has been dealt with.',
     subtitleCount: (n: number) => `${n} ${n === 1 ? 'entry is' : 'entries are'} waiting for a decision.`,
-    allClear: "All clear — nothing left to review.",
+    allClear: 'All clear — nothing left to review. Nicely kept up.',
+
+    // Tier 1 — genuinely overdue: their time already passed while they were
+    // still open. "Stuck", not just "old".
+    stuckGroupTitle: 'Stuck',
+    stuckGroupBlurb:
+      'Still open from a day or month that has already ended. For each: mark it done if it turned out to not matter, migrate it to when you will actually do it, or let it go.',
     pastDaysTitle: 'From days that have passed',
-    pastDaysBlurb: 'Still open from a day already behind you — mark it done, move it to today or later, or drop it.',
     pastMonthsTitle: 'From months that have passed',
-    pastMonthsBlurb: 'Left open when the month it belonged to ended.',
+
+    // Tier 2 — not overdue in the same sense: a Future Log entry whose month
+    // simply started. It needs filing into a real log, not judgment about
+    // whether it slipped.
+    waitingGroupTitle: 'Waiting to be filed',
+    waitingGroupBlurb:
+      "These were parked in the Future Log for a month that has now arrived. They haven't slipped — they're just ready to move into the Monthly or Weekly log, or a specific day.",
     arrivedTitle: 'Arrived from the Future Log',
-    arrivedBlurb: 'Their month has started — migrate each into the Monthly or Weekly log, or a specific day.',
   },
   collections: {
     eyebrow: 'Collections',
@@ -228,6 +241,16 @@ const en = {
     privacyPolicy: 'Privacy Policy',
     and: 'and',
     termsOfService: 'Terms of Service',
+    // Keyed to the `code` the server sends alongside its (English) error
+    // message, so the UI can show its own copy in whatever language is
+    // active instead of always showing the server's English text.
+    errorCodes: {
+      email_taken: 'An account with this email already exists. Try signing in instead.',
+      invalid_login: 'Incorrect email or password.',
+      account_locked: 'Too many failed attempts — try again in a few minutes.',
+      wrong_password: 'Incorrect password.',
+      last_admin: "You're the last admin — promote someone else first.",
+    } as Record<string, string>,
   },
   admin: {
     navLabel: 'Manage users',
@@ -278,6 +301,7 @@ const en = {
     deleteTitle: 'Delete this collection?',
     deleteBody: (title: string, count: number) =>
       `“${title}” and its ${count} entries will be removed. This cannot be undone.`,
+    notFound: "This collection doesn't exist, or isn't yours.",
   },
 };
 

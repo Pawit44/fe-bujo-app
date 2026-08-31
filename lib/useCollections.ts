@@ -19,7 +19,11 @@ const STALE_AFTER_MS = 60_000;
 let cache: Collection[] | null = null;
 let fetchedAt = 0;
 let inFlight: Promise<void> | null = null;
+// Bumped by invalidateCollections. A request that started under an older
+// version discards its own result instead of publishing it — see refresh().
+let version = 0;
 const subscribers = new Set<(next: Collection[]) => void>();
+const loadingSubscribers = new Set<(loading: boolean) => void>();
 
 function publish(next: Collection[]) {
   cache = next;
@@ -27,21 +31,44 @@ function publish(next: Collection[]) {
   subscribers.forEach((fn) => fn(next));
 }
 
+function setLoading(loading: boolean) {
+  loadingSubscribers.forEach((fn) => fn(loading));
+}
+
 function refresh(): Promise<void> {
   // Collapse concurrent callers onto one request — the sidebar and a page can
   // both ask during the same navigation.
-  inFlight ??= api
+  if (inFlight) return inFlight;
+
+  const myVersion = version;
+  setLoading(true);
+  inFlight = api
     .collections()
-    .then(publish)
+    .then((data) => {
+      // A create/edit/delete invalidated the cache *while this request was in
+      // flight*. Its response reflects the database from before that change,
+      // so publishing it would briefly overwrite the fresh list with a stale
+      // one — and because publish() also stamps fetchedAt, nothing would
+      // consider the cache stale afterwards, so the wrong data could stick
+      // until something else happened to invalidate it again. Dropping it and
+      // letting the retry below run is what actually fixes that.
+      if (myVersion === version) publish(data);
+    })
     .catch(() => undefined)
     .finally(() => {
       inFlight = null;
+      if (myVersion !== version) {
+        void refresh();
+      } else {
+        setLoading(false);
+      }
     });
   return inFlight;
 }
 
 /** Drops the cache and refetches — call after creating, editing or deleting one. */
 export function invalidateCollections() {
+  version++;
   fetchedAt = 0;
   void refresh();
 }
@@ -59,4 +86,22 @@ export function useCollections(): Collection[] {
   }, []);
 
   return collections;
+}
+
+/** Whether a fetch of the shared collections cache is currently in flight —
+ * for a small inline spinner, not a full-page one; the sidebar and any page
+ * reading `useCollections()` already have last-known-good data to show
+ * underneath it. */
+export function useCollectionsLoading(): boolean {
+  const [loading, setLoadingState] = useState(inFlight !== null);
+
+  useEffect(() => {
+    loadingSubscribers.add(setLoadingState);
+    setLoadingState(inFlight !== null);
+    return () => {
+      loadingSubscribers.delete(setLoadingState);
+    };
+  }, []);
+
+  return loading;
 }

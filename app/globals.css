@@ -1010,6 +1010,86 @@ ol {
   }
 }
 
+/* --------------------------------------------------------------------------
+   Review page — two tiers ("stuck" vs "waiting to be filed"), each with its
+   own explanation, so the page reads as two short checklists rather than one
+   undifferentiated pile of overdue-looking items.
+   -------------------------------------------------------------------------- */
+
+.review-intro {
+  max-width: 68ch;
+  font-size: 13.5px;
+  line-height: 1.65;
+  color: var(--ink-soft);
+  margin-bottom: 24px;
+}
+
+.review-tier {
+  border-radius: var(--radius-lg);
+  padding: 18px 20px 20px;
+}
+
+.review-tier-stuck {
+  background: var(--danger-soft);
+  border: 1px solid color-mix(in srgb, var(--danger) 28%, transparent);
+}
+
+.review-tier-waiting {
+  background: var(--accent-soft);
+  border: 1px solid var(--accent-line);
+}
+
+.review-tier-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.review-tier-title {
+  font-family: var(--font-serif);
+  font-size: 18px;
+  letter-spacing: -0.01em;
+}
+
+.review-tier-stuck .review-tier-title {
+  color: var(--danger-soft-ink);
+}
+
+.review-tier-waiting .review-tier-title {
+  color: var(--accent);
+}
+
+/* This is the line that used to hug the border above it (a stray negative
+   margin pulling it up against .card-head) — it now just sits in normal flow
+   with its own breathing room, no numeric nudging needed. */
+.review-tier-blurb {
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: var(--ink-soft);
+  max-width: 68ch;
+  margin-bottom: 16px;
+}
+
+.review-subgroups {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.review-subgroup-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+}
+
+@media (max-width: 560px) {
+  .review-tier {
+    padding: 14px 14px 16px;
+  }
+}
+
 @media (max-width: 640px) {
   .recent-activity-hint {
     display: none;

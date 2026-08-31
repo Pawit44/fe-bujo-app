@@ -7,7 +7,7 @@ import EntryList from '@/components/EntryList';
 import ErrorToast from '@/components/ErrorToast';
 import { api } from '@/lib/api';
 import { useEntries } from '@/lib/useEntries';
-import { invalidateCollections } from '@/lib/useCollections';
+import { useCollections, invalidateCollections } from '@/lib/useCollections';
 import { useI18n } from '@/lib/i18n';
 import { CollectionIcon } from '@/components/icons';
 import Modal from '@/components/Modal';
@@ -20,44 +20,77 @@ export default function CollectionPage({ params }: { params: Promise<{ id: strin
   const router = useRouter();
 
   const [collection, setCollection] = useState<Collection | null>(null);
-  const [all, setAll] = useState<Collection[]>([]);
+  const [notFound, setNotFound] = useState(false);
   const [confirming, setConfirming] = useState(false);
+  // The full list, for EntryList's "migrate to another collection" picker —
+  // the shared cache, so it's already warm from the sidebar and stays in
+  // sync with any rename/pin done elsewhere instead of a separate copy.
+  const all = useCollections();
 
   const journal = useEntries({ logKind: 'collection', collectionId });
 
   useEffect(() => {
-    api.collection(collectionId).then(setCollection).catch(() => undefined);
-    api.collections().then(setAll).catch(() => undefined);
+    setCollection(null);
+    setNotFound(false);
+    api
+      .collection(collectionId)
+      .then(setCollection)
+      .catch(() => setNotFound(true));
   }, [collectionId]);
 
   const remove = async () => {
-    await api.deleteCollection(collectionId);
-    invalidateCollections(); // drop it from the sidebar's cached list
-    router.push('/collections');
-    router.refresh();
+    try {
+      await api.deleteCollection(collectionId);
+      invalidateCollections(); // drop it from the sidebar's cached list
+      router.push('/collections');
+      router.refresh();
+    } catch (e) {
+      setConfirming(false);
+      journal.setError(e instanceof Error ? e.message : t.common.somethingWentWrong);
+    }
   };
 
   const togglePin = async () => {
     if (!collection) return;
-    const saved = await api.updateCollection(collectionId, { pinned: !collection.pinned });
-    setCollection(saved);
-    invalidateCollections(); // pinning reorders the sidebar
+    try {
+      const saved = await api.updateCollection(collectionId, { pinned: !collection.pinned });
+      setCollection(saved);
+      invalidateCollections(); // pinning reorders the sidebar
+    } catch (e) {
+      journal.setError(e instanceof Error ? e.message : t.common.somethingWentWrong);
+    }
   };
 
   const open = journal.entries.filter((e) => e.status === 'open').length;
   const done = journal.entries.filter((e) => e.status === 'done').length;
 
+  if (notFound) {
+    return (
+      <div className="page">
+        <div className="empty empty-lg">{t.collection.notFound}</div>
+      </div>
+    );
+  }
+
   return (
     <div className="page">
       <header className="page-head">
-        <div>
-          <div className="eyebrow">{t.collection.eyebrow}</div>
-          <h1 className="page-title collection-title">
-            {collection && <CollectionIcon icon={collection.icon} size={30} />}
-            {collection ? collection.title : '…'}
-          </h1>
-          <p className="page-sub">{collection?.description || t.collection.defaultDescription}</p>
-        </div>
+        {collection ? (
+          <div>
+            <div className="eyebrow">{t.collection.eyebrow}</div>
+            <h1 className="page-title collection-title">
+              <CollectionIcon icon={collection.icon} size={30} />
+              {collection.title}
+            </h1>
+            <p className="page-sub">{collection.description || t.collection.defaultDescription}</p>
+          </div>
+        ) : (
+          <div style={{ flex: 1 }}>
+            <div className="skeleton" style={{ height: 14, width: 90, marginBottom: 10 }} />
+            <div className="skeleton" style={{ height: 32, width: 240, marginBottom: 10 }} />
+            <div className="skeleton" style={{ height: 14, width: 320 }} />
+          </div>
+        )}
         <div className="head-actions">
           <button className="btn btn-sm" onClick={togglePin} disabled={!collection}>
             {collection?.pinned ? (
@@ -70,7 +103,7 @@ export default function CollectionPage({ params }: { params: Promise<{ id: strin
               </>
             )}
           </button>
-          <button className="btn btn-sm" onClick={() => setConfirming(true)}>
+          <button className="btn btn-sm" onClick={() => setConfirming(true)} disabled={!collection}>
             <Trash2 size={14} strokeWidth={1.8} /> {t.common.delete}
           </button>
         </div>

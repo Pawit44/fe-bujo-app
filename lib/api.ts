@@ -13,9 +13,15 @@ const MUTATING = new Set(['POST', 'PATCH', 'PUT', 'DELETE']);
 
 export class ApiError extends Error {
   status: number;
-  constructor(message: string, status: number) {
+  /** Stable machine-readable error id (e.g. "email_taken"), when the server
+   * sent one — lets the UI show its own localized copy instead of whatever
+   * language the raw `error` string happens to be in. Undefined for
+   * validation errors, which are already a message meant to be shown as-is. */
+  code?: string;
+  constructor(message: string, status: number, code?: string) {
     super(message);
     this.status = status;
+    this.code = code;
   }
 }
 
@@ -33,9 +39,11 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   });
   if (!res.ok) {
     let message = `Request failed (${res.status})`;
+    let code: string | undefined;
     try {
       const body = await res.json();
       if (body?.error) message = body.error;
+      if (typeof body?.code === 'string') code = body.code;
     } catch {
       /* body was not JSON - keep the generic message */
     }
@@ -44,10 +52,26 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
     if (res.status === 401 && typeof window !== 'undefined') {
       window.dispatchEvent(new Event('bujo:unauthorized'));
     }
-    throw new ApiError(message, res.status);
+    throw new ApiError(message, res.status, code);
   }
   if (res.status === 204) return undefined as T;
   return (await res.json()) as T;
+}
+
+/**
+ * Turns a caught error into text worth showing a user: a coded ApiError
+ * (email_taken, wrong_password, ...) gets the dictionary's localized copy for
+ * that code, an uncoded ApiError (validation errors — already a message
+ * meant to be read as-is) gets its own message, and anything else — a
+ * network failure, a thrown non-Error — gets the generic fallback rather
+ * than `String(err)` or a blank error.
+ */
+export function describeError(err: unknown, errorCodes: Record<string, string>, fallback: string): string {
+  if (err instanceof ApiError) {
+    if (err.code && errorCodes[err.code]) return errorCodes[err.code];
+    return err.message || fallback;
+  }
+  return fallback;
 }
 
 function query(params: Record<string, string | number | undefined | null>) {

@@ -3,9 +3,10 @@
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { ShieldCheck, ShieldOff, Trash2 } from 'lucide-react';
-import { api } from '@/lib/api';
+import { api, describeError } from '@/lib/api';
 import { useAuth } from '@/lib/AuthProvider';
 import { useI18n } from '@/lib/i18n';
+import ErrorToast from '@/components/ErrorToast';
 import type { Role, User } from '@/lib/types';
 
 export default function AdminPage() {
@@ -16,6 +17,7 @@ export default function AdminPage() {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [confirming, setConfirming] = useState<User | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   // Client-side guard for UX only — the API enforces this independently.
   useEffect(() => {
@@ -34,15 +36,24 @@ export default function AdminPage() {
   }, []);
 
   const setRole = async (id: number, role: Role) => {
-    const updated = await api.adminUpdateRole(id, role);
-    setUsers((list) => list.map((u) => (u.id === id ? updated : u)));
+    try {
+      const updated = await api.adminUpdateRole(id, role);
+      setUsers((list) => list.map((u) => (u.id === id ? updated : u)));
+    } catch (e) {
+      setError(describeError(e, t.auth.errorCodes, t.common.somethingWentWrong));
+    }
   };
 
   const remove = async () => {
     if (!confirming) return;
-    await api.adminDeleteUser(confirming.id);
-    setUsers((list) => list.filter((u) => u.id !== confirming.id));
-    setConfirming(null);
+    try {
+      await api.adminDeleteUser(confirming.id);
+      setUsers((list) => list.filter((u) => u.id !== confirming.id));
+      setConfirming(null);
+    } catch (e) {
+      setError(describeError(e, t.auth.errorCodes, t.common.somethingWentWrong));
+      setConfirming(null);
+    }
   };
 
   if (me && me.role !== 'admin') return null;
@@ -133,6 +144,7 @@ export default function AdminPage() {
           </div>
         </div>
       )}
+      <ErrorToast message={error} onDismiss={() => setError(null)} />
     </div>
   );
 }

@@ -1,37 +1,27 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Inbox } from 'lucide-react';
-import { api } from '@/lib/api';
-import { invalidateCollections } from '@/lib/useCollections';
+import { api, describeError } from '@/lib/api';
+import { useCollections, useCollectionsLoading, invalidateCollections } from '@/lib/useCollections';
 import { useI18n } from '@/lib/i18n';
 import { CollectionIcon, COLLECTION_ICONS, DEFAULT_COLLECTION_ICON } from '@/components/icons';
 import Modal from '@/components/Modal';
-import { ApiError } from '@/lib/api';
-import type { Collection } from '@/lib/types';
 
 export default function CollectionsPage() {
   const { t } = useI18n();
-  const [collections, setCollections] = useState<Collection[]>([]);
-  const [loading, setLoading] = useState(true);
+  // The shared cache, not a page-local fetch: creating here and seeing the
+  // sidebar's list update (and vice versa) both go through the same source
+  // of truth instead of two independent copies that can drift apart.
+  const collections = useCollections();
+  const loading = useCollectionsLoading() && collections.length === 0;
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [icon, setIcon] = useState(DEFAULT_COLLECTION_ICON);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  const load = () =>
-    api
-      .collections()
-      .then(setCollections)
-      .catch(() => undefined)
-      .finally(() => setLoading(false));
-
-  useEffect(() => {
-    load();
-  }, []);
 
   const create = async () => {
     if (!title.trim()) return;
@@ -43,10 +33,9 @@ export default function CollectionsPage() {
       setDescription('');
       setIcon(DEFAULT_COLLECTION_ICON);
       setOpen(false);
-      await load();
-      invalidateCollections(); // the sidebar caches this list — tell it to refetch
+      invalidateCollections(); // refetches the one shared list this page and the sidebar both read
     } catch (e) {
-      setError(e instanceof ApiError ? e.message : 'Something went wrong');
+      setError(describeError(e, t.auth.errorCodes, t.common.somethingWentWrong));
     } finally {
       setSaving(false);
     }

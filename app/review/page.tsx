@@ -12,11 +12,17 @@ import type { Entry } from '@/lib/types';
 
 /**
  * The BuJo migration ritual, made concrete: every open entry whose day,
- * month, or future-log slot has already passed, grouped by where it's
- * overdue from, so the reader works through it as a short checklist —
- * decide, for each, whether it's done, still worth doing (migrate it
- * forward), or not (drop it) — rather than hunting stale tasks down one old
- * week or month at a time.
+ * month, or future-log slot has already passed, so the reader works through
+ * it as a short checklist — decide, for each, whether it's done, still worth
+ * doing (migrate it forward), or not (drop it) — rather than hunting stale
+ * tasks down one old week or month at a time.
+ *
+ * Grouped in two tiers rather than one flat list of three sections, because
+ * they aren't the same *kind* of item: a day or month entry sitting here is
+ * genuinely stuck — its time ran out while it was still open. A Future Log
+ * entry sitting here just had its month start; nothing about it slipped, it
+ * simply needs filing into a real log now. Telling those apart up front is
+ * what keeps "4 things to review" from reading as one undifferentiated pile.
  */
 export default function ReviewPage() {
   const { t } = useI18n();
@@ -35,12 +41,11 @@ export default function ReviewPage() {
     return { weekly, monthly, future };
   }, [review.entries]);
 
-  const sections = [
+  const stuckGroups = [
     {
       key: 'weekly',
       Icon: CalendarDays,
       title: t.review.pastDaysTitle,
-      blurb: t.review.pastDaysBlurb,
       entries: groups.weekly,
       label: (e: Entry) => formatDayLong(e.date, t.dates.months, t.dates.days),
     },
@@ -48,19 +53,12 @@ export default function ReviewPage() {
       key: 'monthly',
       Icon: Rows3,
       title: t.review.pastMonthsTitle,
-      blurb: t.review.pastMonthsBlurb,
       entries: groups.monthly,
       label: (e: Entry) => formatMonth(e.month, t.dates.months),
     },
-    {
-      key: 'future',
-      Icon: CalendarClock,
-      title: t.review.arrivedTitle,
-      blurb: t.review.arrivedBlurb,
-      entries: groups.future,
-      label: (e: Entry) => formatMonth(e.month, t.dates.months),
-    },
-  ];
+  ].filter((g) => g.entries.length > 0);
+
+  const stuckCount = groups.weekly.length + groups.monthly.length;
 
   return (
     <div className="page">
@@ -74,6 +72,8 @@ export default function ReviewPage() {
         </div>
       </header>
 
+      <p className="review-intro">{t.review.intro}</p>
+
       {!review.loading && review.entries.length === 0 && (
         <div className="empty empty-lg">
           <div className="empty-glyph">
@@ -86,37 +86,77 @@ export default function ReviewPage() {
       {review.loading ? (
         <div className="skeleton" style={{ height: 220 }} />
       ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
-          {sections.map(
-            (section) =>
-              section.entries.length > 0 && (
-                <section key={section.key} className="card">
-                  <div className="card-head">
-                    <h2 className="card-title" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                      <section.Icon size={16} strokeWidth={1.8} style={{ color: 'var(--ink-faint)' }} />
-                      {section.title}
-                    </h2>
-                    <span className="pill">{section.entries.length}</span>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 22 }}>
+          {stuckCount > 0 && (
+            <section className="review-tier review-tier-stuck">
+              <div className="review-tier-head">
+                <h2 className="review-tier-title">{t.review.stuckGroupTitle}</h2>
+                <span className="pill">{stuckCount}</span>
+              </div>
+              <p className="review-tier-blurb">{t.review.stuckGroupBlurb}</p>
+
+              <div className="review-subgroups">
+                {stuckGroups.map((group) => (
+                  <div key={group.key} className="card review-subgroup">
+                    <div className="card-head">
+                      <h3 className="card-title review-subgroup-title">
+                        <group.Icon size={15} strokeWidth={1.8} style={{ color: 'var(--ink-faint)' }} />
+                        {group.title}
+                      </h3>
+                      <span className="pill">{group.entries.length}</span>
+                    </div>
+                    <div style={{ padding: '0 8px 10px' }}>
+                      {group.entries.map((entry) => (
+                        <EntryRow
+                          key={entry.id}
+                          entry={entry}
+                          collections={collections}
+                          showContext={group.label(entry)}
+                          onToggle={review.toggle}
+                          onUpdate={review.update}
+                          onDelete={review.remove}
+                          onMigrate={review.migrate}
+                        />
+                      ))}
+                    </div>
                   </div>
-                  <p className="muted" style={{ fontSize: 12.5, padding: '0 14px', marginTop: -4, marginBottom: 8 }}>
-                    {section.blurb}
-                  </p>
-                  <div style={{ padding: '0 8px 10px' }}>
-                    {section.entries.map((entry) => (
-                      <EntryRow
-                        key={entry.id}
-                        entry={entry}
-                        collections={collections}
-                        showContext={section.label(entry)}
-                        onToggle={review.toggle}
-                        onUpdate={review.update}
-                        onDelete={review.remove}
-                        onMigrate={review.migrate}
-                      />
-                    ))}
-                  </div>
-                </section>
-              ),
+                ))}
+              </div>
+            </section>
+          )}
+
+          {groups.future.length > 0 && (
+            <section className="review-tier review-tier-waiting">
+              <div className="review-tier-head">
+                <h2 className="review-tier-title">{t.review.waitingGroupTitle}</h2>
+                <span className="pill">{groups.future.length}</span>
+              </div>
+              <p className="review-tier-blurb">{t.review.waitingGroupBlurb}</p>
+
+              <div className="card review-subgroup">
+                <div className="card-head">
+                  <h3 className="card-title review-subgroup-title">
+                    <CalendarClock size={15} strokeWidth={1.8} style={{ color: 'var(--ink-faint)' }} />
+                    {t.review.arrivedTitle}
+                  </h3>
+                  <span className="pill">{groups.future.length}</span>
+                </div>
+                <div style={{ padding: '0 8px 10px' }}>
+                  {groups.future.map((entry) => (
+                    <EntryRow
+                      key={entry.id}
+                      entry={entry}
+                      collections={collections}
+                      showContext={formatMonth(entry.month, t.dates.months)}
+                      onToggle={review.toggle}
+                      onUpdate={review.update}
+                      onDelete={review.remove}
+                      onMigrate={review.migrate}
+                    />
+                  ))}
+                </div>
+              </div>
+            </section>
           )}
         </div>
       )}

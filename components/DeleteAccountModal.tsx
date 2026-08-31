@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Modal from './Modal';
 import { useAuth } from '@/lib/AuthProvider';
-import { ApiError } from '@/lib/api';
+import { describeError } from '@/lib/api';
 import { useI18n } from '@/lib/i18n';
 
 export default function DeleteAccountModal({ onClose }: { onClose: () => void }) {
@@ -23,7 +23,7 @@ export default function DeleteAccountModal({ onClose }: { onClose: () => void })
       await deleteAccount(password);
       router.replace('/login');
     } catch (e) {
-      setError(e instanceof ApiError ? e.message : 'Something went wrong');
+      setError(describeError(e, t.auth.errorCodes, t.common.somethingWentWrong));
       setSubmitting(false);
     }
   };
