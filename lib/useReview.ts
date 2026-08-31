@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { api } from './api';
-import { invalidateOverview } from './useOverview';
+import { invalidateJournalCaches } from './dataInvalidation';
 import type { Entry, MigrateTarget } from './types';
 
 /**
@@ -50,7 +50,7 @@ export function useReview() {
       drop(entry.id);
       try {
         await api.toggleEntry(entry.id);
-        invalidateOverview();
+        invalidateJournalCaches();
       } catch (e) {
         setEntries((prev) => [...prev, entry]);
         setError((e as Error).message);
@@ -64,7 +64,7 @@ export function useReview() {
       drop(entry.id);
       try {
         await api.migrateEntry(entry.id, target);
-        invalidateOverview();
+        invalidateJournalCaches();
       } catch (e) {
         setEntries((prev) => [...prev, entry]);
         setError((e as Error).message);
@@ -78,7 +78,7 @@ export function useReview() {
       drop(entry.id);
       try {
         await api.deleteEntry(entry.id);
-        invalidateOverview();
+        invalidateJournalCaches();
       } catch (e) {
         setEntries((prev) => [...prev, entry]);
         setError((e as Error).message);
@@ -92,6 +92,7 @@ export function useReview() {
     try {
       const saved = await api.updateEntry(entry.id, patch);
       setEntries((prev) => prev.map((e) => (e.id === entry.id ? saved : e)));
+      invalidateJournalCaches();
     } catch (e) {
       setEntries((prev) => prev.map((x) => (x.id === entry.id ? entry : x)));
       setError((e as Error).message);

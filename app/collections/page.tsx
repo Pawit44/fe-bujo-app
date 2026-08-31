@@ -2,9 +2,10 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
-import { Inbox } from 'lucide-react';
+import { Inbox, Pin } from 'lucide-react';
 import { api, describeError } from '@/lib/api';
-import { useCollections, useCollectionsLoading, invalidateCollections } from '@/lib/useCollections';
+import { useCollections, useCollectionsLoading } from '@/lib/useCollections';
+import { invalidateJournalCaches } from '@/lib/dataInvalidation';
 import { useI18n } from '@/lib/i18n';
 import { CollectionIcon, COLLECTION_ICONS, DEFAULT_COLLECTION_ICON } from '@/components/icons';
 import Modal from '@/components/Modal';
@@ -33,7 +34,7 @@ export default function CollectionsPage() {
       setDescription('');
       setIcon(DEFAULT_COLLECTION_ICON);
       setOpen(false);
-      invalidateCollections(); // refetches the one shared list this page and the sidebar both read
+      invalidateJournalCaches(); // refetches the one shared list this page and the sidebar both read
     } catch (e) {
       setError(describeError(e, t.auth.errorCodes, t.common.somethingWentWrong));
     } finally {
@@ -80,12 +81,16 @@ export default function CollectionsPage() {
           {collections.map((col) => {
             const pct = col.total ? Math.round(((col.done ?? 0) / col.total) * 100) : 0;
             return (
-              <Link key={col.id} href={`/collections/${col.id}`} className="log-card">
+              <Link key={col.id} href={`/collections/${col.id}`} className={`log-card ${col.pinned ? 'is-pinned' : ''}`}>
                 <div className="log-card-top">
                   <div className="log-glyph">
                     <CollectionIcon icon={col.icon} size={19} />
                   </div>
-                  {col.pinned && <span className="pill">{t.common.pinned}</span>}
+                  {col.pinned && (
+                    <span className="pill pill-pinned">
+                      <Pin size={11} strokeWidth={2} /> {t.common.pinned}
+                    </span>
+                  )}
                 </div>
                 <div>
                   <div className="log-name">{col.title}</div>

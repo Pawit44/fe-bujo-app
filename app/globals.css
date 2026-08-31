@@ -1213,6 +1213,85 @@ ol {
   font-weight: 500;
 }
 
+.profile-pinned-tile {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13.5px;
+  font-weight: 550;
+  color: var(--ink);
+  border-color: var(--accent-line);
+  background: var(--accent-soft);
+  transition: transform var(--fast), box-shadow var(--fast);
+}
+
+.profile-pinned-tile:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+
+.profile-pinned-icon {
+  flex-shrink: 0;
+  width: 30px;
+  height: 30px;
+  border-radius: 9px;
+  background: var(--paper);
+  color: var(--accent);
+  display: grid;
+  place-items: center;
+}
+
+.profile-pinned-title {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.profile-breakdown-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+  font-size: 12.5px;
+  font-weight: 550;
+  color: var(--ink-muted);
+  transition: color var(--fast);
+}
+
+.profile-breakdown-toggle:hover {
+  color: var(--ink);
+}
+
+.profile-breakdown {
+  margin-top: 10px;
+  padding: 4px 0;
+}
+
+.profile-breakdown-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--line);
+}
+
+.profile-breakdown-row:last-child {
+  border-bottom: none;
+}
+
+.profile-breakdown-label {
+  flex: 1;
+  font-size: 13.5px;
+  color: var(--ink-soft);
+}
+
+.profile-breakdown-figure {
+  display: flex;
+  gap: 6px;
+}
+
 @media (max-width: 640px) {
   .recent-activity-hint {
     display: none;
@@ -1363,6 +1442,21 @@ ol {
   border-radius: 20px;
   padding: 2px 9px;
   white-space: nowrap;
+}
+
+.pill-pinned {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--accent);
+  background: var(--accent-soft);
+}
+
+/* A pinned collection stands out in its own list too, not just once it's
+   promoted to the Profile page — a subtle accent border is enough to read as
+   "this one's pinned" without fighting the card's own content for attention. */
+.log-card.is-pinned {
+  border-color: var(--accent-line);
 }
 
 /* --------------------------------------------------------------------------

@@ -7,7 +7,8 @@ import EntryList from '@/components/EntryList';
 import ErrorToast from '@/components/ErrorToast';
 import { api } from '@/lib/api';
 import { useEntries } from '@/lib/useEntries';
-import { useCollections, invalidateCollections } from '@/lib/useCollections';
+import { useCollections } from '@/lib/useCollections';
+import { invalidateJournalCaches } from '@/lib/dataInvalidation';
 import { useI18n } from '@/lib/i18n';
 import { CollectionIcon } from '@/components/icons';
 import Modal from '@/components/Modal';
@@ -41,7 +42,7 @@ export default function CollectionPage({ params }: { params: Promise<{ id: strin
   const remove = async () => {
     try {
       await api.deleteCollection(collectionId);
-      invalidateCollections(); // drop it from the sidebar's cached list
+      invalidateJournalCaches(); // drops it from the sidebar, and its entries from the Index totals
       router.push('/collections');
       router.refresh();
     } catch (e) {
@@ -55,7 +56,7 @@ export default function CollectionPage({ params }: { params: Promise<{ id: strin
     try {
       const saved = await api.updateCollection(collectionId, { pinned: !collection.pinned });
       setCollection(saved);
-      invalidateCollections(); // pinning reorders the sidebar
+      invalidateJournalCaches(); // pinning reorders the sidebar
     } catch (e) {
       journal.setError(e instanceof Error ? e.message : t.common.somethingWentWrong);
     }

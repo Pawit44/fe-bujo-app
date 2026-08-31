@@ -60,6 +60,14 @@ export interface MonthSummary {
   done: number;
 }
 
+/** One of the four tabs every entry list splits into — task/event/note/idea —
+ * with its all-time open and done counts. Always all four, even at zero. */
+export interface TypeCount {
+  tab: 'task' | 'event' | 'note' | 'idea';
+  open: number;
+  done: number;
+}
+
 export interface IndexOverview {
   today: string;
   month: string;
@@ -72,6 +80,7 @@ export interface IndexOverview {
   /** Open entries whose spread has already passed — badge count for Review. */
   dueForReview: number;
   totals: { entries: number; done: number };
+  typeBreakdown: TypeCount[];
 }
 
 /** Destination of a migration. */

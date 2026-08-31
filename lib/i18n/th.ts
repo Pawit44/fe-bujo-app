@@ -52,14 +52,6 @@ const th: Dictionary = {
       weekly: 'บันทึกรายสัปดาห์',
       review: 'ทบทวน',
     },
-    legend: {
-      task: 'งาน',
-      event: 'กิจกรรม',
-      note: 'โน้ต',
-      done: 'เสร็จ',
-      migrated: 'ย้ายแล้ว',
-      scheduled: 'เลื่อนแล้ว',
-    },
     credit: 'jodtask — โดย ภาวิฒ ฉ. วิศวกรรมคอมพิวเตอร์ มทส.',
   },
   entry: {
@@ -301,6 +293,9 @@ const th: Dictionary = {
     reviewCardAllClear: 'จัดการครบหมดแล้ว',
     accountSection: 'บัญชี',
     accountSectionBlurb: 'จัดการเซสชันและบัญชีของคุณบนอุปกรณ์นี้',
+    pinnedTitle: 'คอลเลกชันที่ปักหมุด',
+    viewBreakdown: 'ดูรายละเอียด',
+    hideBreakdown: 'ซ่อนรายละเอียด',
   },
   collection: {
     eyebrow: 'คอลเลกชัน',

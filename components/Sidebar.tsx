@@ -179,14 +179,11 @@ export default function Sidebar() {
       )}
 
       <div className="sidebar-foot">
-        <div style={{ marginBottom: 6 }}>
-          <code>•</code> {t.sidebar.legend.task} &nbsp; <code>○</code> {t.sidebar.legend.event} &nbsp;{' '}
-          <code>—</code> {t.sidebar.legend.note}
-        </div>
-        <div>
-          <code>×</code> {t.sidebar.legend.done} &nbsp; <code>&gt;</code> {t.sidebar.legend.migrated} &nbsp;{' '}
-          <code>&lt;</code> {t.sidebar.legend.scheduled}
-        </div>
+        {/* The bullet-symbol legend used to be duplicated here too, in its
+            own text-character style — incomplete (no priority/inspiration)
+            and, for those two, inconsistent with the actual Star/Sparkles
+            icons shown everywhere else. One explanation, reachable from the
+            "?" button above, beats a second copy that can drift from it. */}
         <div className="legal-links">
           <Link href="/privacy">{t.auth.privacyPolicy}</Link>
           <span aria-hidden="true">·</span>

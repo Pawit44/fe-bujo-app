@@ -2,12 +2,39 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
-import { CalendarRange, CheckCircle2, LayoutList, ListTodo, LogOut, RotateCcw, Rows3, Trash2 } from 'lucide-react';
+import {
+  CalendarClock,
+  CalendarRange,
+  ChevronDown,
+  CheckCircle2,
+  LayoutList,
+  ListTodo,
+  LogOut,
+  Pin,
+  RotateCcw,
+  Rows3,
+  Sparkles,
+  StickyNote,
+  Trash2,
+  type LucideIcon,
+} from 'lucide-react';
 import { useAuth } from '@/lib/AuthProvider';
+import { CollectionIcon } from '@/components/icons';
 import { useCollections } from '@/lib/useCollections';
 import { useOverview } from '@/lib/useOverview';
 import { useI18n } from '@/lib/i18n';
 import DeleteAccountModal from '@/components/DeleteAccountModal';
+
+// Same icon per type everywhere in the app — EntryList's tabs, the Index
+// legend, and this breakdown all point at the same four lucide components,
+// so "idea" (or any of the others) never looks like a different concept
+// depending on which screen you're reading it from.
+const TYPE_ICONS: Record<string, LucideIcon> = {
+  task: ListTodo,
+  event: CalendarClock,
+  note: StickyNote,
+  idea: Sparkles,
+};
 
 /**
  * The account's own page: who's signed in, a quick read on how the journal
@@ -20,6 +47,7 @@ export default function ProfilePage() {
   const { data } = useOverview();
   const collections = useCollections();
   const [deleteOpen, setDeleteOpen] = useState(false);
+  const [breakdownOpen, setBreakdownOpen] = useState(false);
 
   if (!user) return null;
 
@@ -27,6 +55,7 @@ export default function ProfilePage() {
   const done = data?.totals.done ?? 0;
   const rate = total ? Math.round((done / total) * 100) : 0;
   const dueForReview = data?.dueForReview ?? 0;
+  const pinned = collections.filter((c) => c.pinned);
 
   const memberSince = new Date(user.createdAt).toLocaleDateString(locale === 'th' ? 'th-TH' : 'en-US', {
     year: 'numeric',
@@ -70,6 +99,31 @@ export default function ProfilePage() {
         </div>
       </section>
 
+      {/* Pinned collections get the most prominent, dedicated spot on the
+          page — right under who-you-are and before any stat — because
+          pinning something is the reader saying "this is the one I come back
+          to," and a pin that only changes its sort position in a list further
+          down wasn't earning that. */}
+      {pinned.length > 0 && (
+        <section style={{ marginTop: 22 }}>
+          <div className="eyebrow" style={{ marginBottom: 10, display: 'flex', alignItems: 'center', gap: 6 }}>
+            <Pin size={12} strokeWidth={2} />
+            {t.profile.pinnedTitle}
+          </div>
+          <div className="grid grid-3">
+            {pinned.map((col) => (
+              <Link key={col.id} href={`/collections/${col.id}`} className="card card-pad profile-pinned-tile">
+                <span className="profile-pinned-icon">
+                  <CollectionIcon icon={col.icon} size={17} />
+                </span>
+                <span className="profile-pinned-title">{col.title}</span>
+                {typeof col.open === 'number' && col.open > 0 && <span className="pill">{col.open}</span>}
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
+
       <section style={{ marginTop: 22 }}>
         <div className="eyebrow" style={{ marginBottom: 10 }}>
           {t.profile.statsTitle}
@@ -90,6 +144,46 @@ export default function ProfilePage() {
             <div className="muted profile-stat-label">{t.profile.completionRate}</div>
           </div>
         </div>
+
+        {data && data.typeBreakdown.length > 0 && (
+          <>
+            <button
+              type="button"
+              className="profile-breakdown-toggle"
+              onClick={() => setBreakdownOpen((v) => !v)}
+              aria-expanded={breakdownOpen}
+            >
+              <ChevronDown
+                size={14}
+                strokeWidth={2}
+                style={{ transform: breakdownOpen ? 'rotate(180deg)' : undefined, transition: 'transform 160ms' }}
+              />
+              {breakdownOpen ? t.profile.hideBreakdown : t.profile.viewBreakdown}
+            </button>
+
+            {breakdownOpen && (
+              <div className="card profile-breakdown">
+                {data.typeBreakdown.map((row) => {
+                  const Icon = TYPE_ICONS[row.tab];
+                  return (
+                    <div key={row.tab} className="profile-breakdown-row">
+                      <Icon size={15} strokeWidth={1.8} style={{ color: 'var(--ink-faint)' }} />
+                      <span className="profile-breakdown-label">{t.entryTabs[row.tab]}</span>
+                      <span className="profile-breakdown-figure">
+                        <span className="pill">
+                          {row.open} {t.entryTabs.statusOpen}
+                        </span>
+                        <span className="pill" style={{ color: 'var(--done)' }}>
+                          {row.done} {t.entryTabs.statusDone}
+                        </span>
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </>
+        )}
       </section>
 
       <section style={{ marginTop: 22 }}>

@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { AlertTriangle, RotateCcw } from 'lucide-react';
+import { AlertTriangle, RotateCcw, Sparkles, Star } from 'lucide-react';
 import { formatDayLong, formatMonth, formatMonthShort, formatRange, fromISODate } from '@/lib/date';
 import { useI18n } from '@/lib/i18n';
 import { useOverview } from '@/lib/useOverview';
@@ -264,10 +264,10 @@ export default function IndexPage() {
             <code>&lt;</code> {t.index.legend.scheduled}
           </span>
           <span>
-            <code>★</code> {t.index.legend.priority}
+            <Star size={13} strokeWidth={1.8} style={{ verticalAlign: -2 }} /> {t.index.legend.priority}
           </span>
           <span>
-            <code>!</code> {t.index.legend.inspiration}
+            <Sparkles size={13} strokeWidth={1.8} style={{ verticalAlign: -2 }} /> {t.index.legend.inspiration}
           </span>
         </div>
       </section>

@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { api } from './api';
-import { invalidateOverview } from './useOverview';
+import { invalidateJournalCaches } from './dataInvalidation';
 import type { Entry, EntryDraft, MigrateTarget } from './types';
 
 type Params = Record<string, string | number | undefined | null>;
@@ -66,7 +66,7 @@ export function useEntries(params: Params) {
       try {
         const saved = await api.createEntry(draft);
         setEntries((prev) => prev.map((e) => (e.id === optimistic.id ? saved : e)));
-        invalidateOverview(); // a new entry changes this log's totals on the Index page
+        invalidateJournalCaches(); // a new entry changes this log's totals, and its collection's if it has one
         return saved;
       } catch (e) {
         setEntries((prev) => prev.filter((x) => x.id !== optimistic.id));
@@ -82,6 +82,10 @@ export function useEntries(params: Params) {
     try {
       const saved = await api.updateEntry(entry.id, patch);
       setEntries((prev) => prev.map((e) => (e.id === entry.id ? saved : e)));
+      // A patch can change status/type here too (not just toggle/content
+      // edits go through update) — cheap to always invalidate than to track
+      // which patches matter.
+      invalidateJournalCaches();
     } catch (e) {
       setEntries((prev) => prev.map((x) => (x.id === entry.id ? entry : x)));
       setError((e as Error).message);
@@ -94,7 +98,7 @@ export function useEntries(params: Params) {
     try {
       const saved = await api.toggleEntry(entry.id);
       setEntries((prev) => prev.map((e) => (e.id === entry.id ? saved : e)));
-      invalidateOverview(); // done/open counts on the Index page and Review's badge both depend on this
+      invalidateJournalCaches(); // done/open counts everywhere depend on this — the Index page, Review's badge, and any collection this entry belongs to
     } catch (e) {
       setEntries((prev) => prev.map((x) => (x.id === entry.id ? entry : x)));
       setError((e as Error).message);
@@ -105,7 +109,7 @@ export function useEntries(params: Params) {
     setEntries((prev) => prev.filter((e) => e.id !== entry.id));
     try {
       await api.deleteEntry(entry.id);
-      invalidateOverview();
+      invalidateJournalCaches(); // this is the exact case that used to go stale: deleting an entry left its collection's cached count untouched
     } catch (e) {
       setEntries((prev) => [...prev, entry].sort((a, b) => a.position - b.position));
       setError((e as Error).message);
@@ -116,7 +120,7 @@ export function useEntries(params: Params) {
     async (entry: Entry, target: MigrateTarget) => {
       try {
         await api.migrateEntry(entry.id, target);
-        invalidateOverview(); // moved to a different log/month/week — every count downstream shifts
+        invalidateJournalCaches(); // moved to a different log/month/week/collection — every count downstream shifts
       } catch (e) {
         setError((e as Error).message);
       }

@@ -55,14 +55,6 @@ const en = {
       weekly: 'Weekly Log',
       review: 'Review',
     },
-    legend: {
-      task: 'task',
-      event: 'event',
-      note: 'note',
-      done: 'done',
-      migrated: 'migrated',
-      scheduled: 'scheduled',
-    },
     credit: 'jodtask — by Pawit CH, Computer Engineering, SUT',
   },
   entry: {
@@ -311,6 +303,9 @@ const en = {
     reviewCardAllClear: "You're all caught up",
     accountSection: 'Account',
     accountSectionBlurb: 'Manage your session and account on this device.',
+    pinnedTitle: 'Pinned collections',
+    viewBreakdown: 'View breakdown',
+    hideBreakdown: 'Hide breakdown',
   },
   collection: {
     eyebrow: 'Collection',
