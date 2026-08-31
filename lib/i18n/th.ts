@@ -310,6 +310,14 @@ const th: Dictionary = {
     deleteTitle: 'ลบคอลเลกชันนี้หรือไม่?',
     deleteBody: (title, count) => `“${title}” และอีก ${count} รายการจะถูกลบ ไม่สามารถย้อนกลับได้`,
     notFound: 'ไม่พบคอลเลกชันนี้ หรือไม่ใช่ของคุณ',
+    newFolder: 'โฟลเดอร์ใหม่',
+    renameFolder: 'เปลี่ยนชื่อโฟลเดอร์',
+    deleteFolder: 'ลบโฟลเดอร์',
+    deleteFolderTitle: 'ลบโฟลเดอร์นี้หรือไม่?',
+    deleteFolderBody: (title) => `"${title}" จะถูกลบ — รายการข้างในจะย้ายกลับไปที่ "ไม่ได้จัดหมวดหมู่" ไม่ได้ถูกลบไปด้วย`,
+    folderTitlePlaceholder: 'ชื่อโฟลเดอร์',
+    unsorted: 'ไม่ได้จัดหมวดหมู่',
+    moveToFolder: 'ย้ายไปโฟลเดอร์',
   },
 };
 

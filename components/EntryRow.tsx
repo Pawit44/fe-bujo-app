@@ -4,8 +4,9 @@ import { useEffect, useRef, useState } from 'react';
 import { Sparkles, Star, Trash2 } from 'lucide-react';
 import Bullet from './Bullet';
 import MigrateMenu from './MigrateMenu';
+import FolderMenu from './FolderMenu';
 import { useI18n } from '@/lib/i18n';
-import type { Collection, Entry, MigrateTarget } from '@/lib/types';
+import type { Collection, Entry, Folder, MigrateTarget } from '@/lib/types';
 
 interface Props {
   entry: Entry;
@@ -20,6 +21,10 @@ interface Props {
   onDragEnd?: () => void;
   dragging?: boolean;
   dropTarget?: boolean;
+  /** Only passed inside a collection's own page — lets this row's "move to
+   * folder" control offer that collection's folders. Omitted everywhere else. */
+  folders?: Folder[];
+  onMoveFolder?: (entry: Entry, folderId: number | null) => void;
 }
 
 /** One bullet: click the glyph to complete, click the text to edit in place. */
@@ -36,6 +41,8 @@ export default function EntryRow({
   onDragEnd,
   dragging,
   dropTarget,
+  folders,
+  onMoveFolder,
 }: Props) {
   const { t } = useI18n();
   const [editing, setEditing] = useState(false);
@@ -147,6 +154,13 @@ export default function EntryRow({
         >
           <Sparkles size={14} strokeWidth={1.8} fill={entry.inspiration ? 'currentColor' : 'none'} />
         </button>
+        {folders && onMoveFolder && (
+          <FolderMenu
+            folders={folders}
+            currentFolderId={entry.folderId}
+            onMove={(folderId) => onMoveFolder(entry, folderId)}
+          />
+        )}
         <MigrateMenu entry={entry} collections={collections} onMigrate={(target) => onMigrate(entry, target)} />
         <button type="button" className="act danger" title={t.common.delete} onClick={() => onDelete(entry)}>
           <Trash2 size={14} strokeWidth={1.8} />

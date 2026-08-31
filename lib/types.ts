@@ -21,10 +21,23 @@ export interface Entry {
   month: string;
   date: string;
   collectionId: number | null;
+  /** Only meaningful when collectionId is set — which of that collection's
+   * folders this entry sits in. Null means the collection's unsorted area. */
+  folderId: number | null;
   priority: boolean;
   inspiration: boolean;
   position: number;
   notes: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+/** A single, flat level of grouping inside one collection — folders don't nest. */
+export interface Folder {
+  id: number;
+  collectionId: number;
+  title: string;
+  position: number;
   createdAt: string;
   updatedAt: string;
 }
@@ -89,6 +102,7 @@ export interface MigrateTarget {
   month?: string;
   date?: string;
   collectionId?: number | null;
+  folderId?: number | null;
 }
 
 export type EntryDraft = Partial<Omit<Entry, 'id' | 'createdAt' | 'updatedAt'>> & {

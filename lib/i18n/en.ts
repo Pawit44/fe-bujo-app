@@ -314,13 +314,21 @@ const en = {
     pinned: 'Pinned',
     pin: 'Pin',
     entriesTitle: 'Entries',
-    addNote: "Anything you add here also shows up as this month's activity on the Index page.",
+    addNote: 'Anything you add here also shows up under Collection activity on the Index page.',
     addToCollection: 'Add to this collection…',
     emptyAddFirst: 'Empty for now — add the first entry below.',
     deleteTitle: 'Delete this collection?',
     deleteBody: (title: string, count: number) =>
       `“${title}” and its ${count} entries will be removed. This cannot be undone.`,
     notFound: "This collection doesn't exist, or isn't yours.",
+    newFolder: 'New folder',
+    renameFolder: 'Rename folder',
+    deleteFolder: 'Delete folder',
+    deleteFolderTitle: 'Delete this folder?',
+    deleteFolderBody: (title: string) => `“${title}” will be removed — its entries move back to Unsorted, not deleted.`,
+    folderTitlePlaceholder: 'Folder name',
+    unsorted: 'Unsorted',
+    moveToFolder: 'Move to folder',
   },
 };
 

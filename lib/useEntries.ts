@@ -55,6 +55,7 @@ export function useEntries(params: Params) {
         month: draft.month ?? '',
         date: draft.date ?? '',
         collectionId: draft.collectionId ?? null,
+        folderId: draft.folderId ?? null,
         priority: draft.priority ?? false,
         inspiration: draft.inspiration ?? false,
         position: Number.MAX_SAFE_INTEGER,
@@ -129,6 +130,21 @@ export function useEntries(params: Params) {
     [reload],
   );
 
+  // Moves a collection entry into a folder, or (folderId: null) back to the
+  // collection's unsorted area. Irrelevant outside a collection context, but
+  // harmless to expose everywhere — nothing calls it unless there's a folder
+  // to move into.
+  const moveToFolder = useCallback(async (entry: Entry, folderId: number | null) => {
+    setEntries((prev) => prev.map((e) => (e.id === entry.id ? { ...e, folderId } : e)));
+    try {
+      const saved = await api.setEntryFolder(entry.id, folderId);
+      setEntries((prev) => prev.map((e) => (e.id === entry.id ? saved : e)));
+    } catch (e) {
+      setEntries((prev) => prev.map((x) => (x.id === entry.id ? entry : x)));
+      setError((e as Error).message);
+    }
+  }, []);
+
   const reorder = useCallback(async (ordered: Entry[]) => {
     setEntries((prev) => {
       const ids = new Set(ordered.map((e) => e.id));
@@ -142,5 +158,5 @@ export function useEntries(params: Params) {
     }
   }, []);
 
-  return { entries, loading, error, reload, add, update, toggle, remove, migrate, reorder, setError };
+  return { entries, loading, error, reload, add, update, toggle, remove, migrate, moveToFolder, reorder, setError };
 }

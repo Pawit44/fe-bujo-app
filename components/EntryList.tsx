@@ -6,7 +6,7 @@ import EntryRow from './EntryRow';
 import QuickAdd from './QuickAdd';
 import { useI18n } from '@/lib/i18n';
 import { tabOf, matchesStatus, type EntryTab, type StatusFilter } from '@/lib/entryFilters';
-import type { Collection, Entry, EntryDraft, EntryType, MigrateTarget } from '@/lib/types';
+import type { Collection, Entry, EntryDraft, EntryType, Folder, MigrateTarget } from '@/lib/types';
 
 interface Props {
   entries: Entry[];
@@ -21,6 +21,9 @@ interface Props {
   onReorder?: (ordered: Entry[]) => void;
   showAdd?: boolean;
   contextLabel?: (entry: Entry) => string | undefined;
+  /** Only passed inside a collection's own page — see EntryRow. */
+  folders?: Folder[];
+  onMoveFolder?: (entry: Entry, folderId: number | null) => void;
 }
 
 /**
@@ -40,6 +43,8 @@ export default function EntryList({
   onReorder,
   showAdd = true,
   contextLabel,
+  folders,
+  onMoveFolder,
 }: Props) {
   const { t } = useI18n();
   const [tab, setTab] = useState<EntryTab>('task');
@@ -160,6 +165,8 @@ export default function EntryList({
           onDragStart={onReorder ? () => setDragId(entry.id) : undefined}
           onDragEnter={onReorder ? () => setOverId(entry.id) : undefined}
           onDragEnd={onReorder ? handleDrop : undefined}
+          folders={folders}
+          onMoveFolder={onMoveFolder}
         />
       ))}
 

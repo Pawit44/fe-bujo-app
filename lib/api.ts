@@ -2,6 +2,7 @@ import type {
   Collection,
   Entry,
   EntryDraft,
+  Folder,
   IndexOverview,
   MigrateTarget,
   Role,
@@ -123,6 +124,14 @@ export const api = {
 
   toggleEntry: (id: number) => request<Entry>(`/entries/${id}/toggle`, { method: 'POST' }),
 
+  // Moves an entry into a collection folder, or (folderId: null) back to
+  // that collection's unsorted area. Separate from updateEntry because a
+  // partial-patch's "field omitted" and "field explicitly cleared" collapse
+  // to the same nil on the wire — this endpoint's only job is setting the
+  // folder, so null is never ambiguous here.
+  setEntryFolder: (id: number, folderId: number | null) =>
+    request<Entry>(`/entries/${id}/folder`, { method: 'PATCH', body: JSON.stringify({ folderId }) }),
+
   migrateEntry: (id: number, target: MigrateTarget) =>
     request<{ source: Entry; migrated: Entry }>(`/entries/${id}/migrate`, {
       method: 'POST',
@@ -149,4 +158,14 @@ export const api = {
 
   deleteCollection: (id: number) =>
     request<{ ok: boolean }>(`/collections/${id}`, { method: 'DELETE' }),
+
+  folders: (collectionId: number) => request<Folder[]>(`/collections/${collectionId}/folders`),
+
+  createFolder: (collectionId: number, title: string) =>
+    request<Folder>(`/collections/${collectionId}/folders`, { method: 'POST', body: JSON.stringify({ title }) }),
+
+  updateFolder: (id: number, patch: Partial<Pick<Folder, 'title' | 'position'>>) =>
+    request<Folder>(`/folders/${id}`, { method: 'PATCH', body: JSON.stringify(patch) }),
+
+  deleteFolder: (id: number) => request<{ ok: boolean }>(`/folders/${id}`, { method: 'DELETE' }),
 };
