@@ -185,6 +185,7 @@ const en = {
     namePlaceholder: 'Your name',
     loginTitle: 'Welcome back',
     loginSubtitle: 'Sign in to your journal.',
+    registeredNotice: 'Account created. Sign in to start your journal.',
     loginButton: 'Sign in',
     loginSubmitting: 'Signing in…',
     registerTitle: 'Create your journal',

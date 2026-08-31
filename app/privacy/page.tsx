@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useI18n } from '@/lib/i18n';
+import BrandMark from '@/components/BrandMark';
 
 const LAST_UPDATED = '2026-08-30';
 
@@ -15,7 +16,7 @@ function Shell({ title, updated, children }: { title: string; updated: string; c
     <div className="legal-page">
       <div className="legal-card">
         <Link href="/" className="brand" style={{ padding: 0, marginBottom: 20 }}>
-          <div className="brand-mark">B</div>
+          <BrandMark />
           <div className="brand-name">Bujo</div>
         </Link>
         <h1 className="auth-title" style={{ marginBottom: 4 }}>

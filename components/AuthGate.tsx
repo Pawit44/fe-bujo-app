@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { useEffect, type ReactNode } from 'react';
 import { useAuth } from '@/lib/AuthProvider';
 import { useI18n } from '@/lib/i18n';
+import BrandMark from './BrandMark';
 
 /** Blocks rendering of the app until a session is confirmed; bounces to /login otherwise. */
 export default function AuthGate({ children }: { children: ReactNode }) {
@@ -18,7 +19,7 @@ export default function AuthGate({ children }: { children: ReactNode }) {
   if (loading || !user) {
     return (
       <div className="auth-loading">
-        <div className="brand-mark">B</div>
+        <BrandMark />
         <p className="muted">{t.auth.loadingSession}</p>
       </div>
     );

@@ -1,16 +1,28 @@
 'use client';
 
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { Suspense, useEffect, useState } from 'react';
 import { useAuth } from '@/lib/AuthProvider';
 import { ApiError } from '@/lib/api';
 import { useI18n } from '@/lib/i18n';
+import BrandMark from '@/components/BrandMark';
 
+// useSearchParams needs a Suspense boundary, otherwise the whole route opts
+// out of static prerendering.
 export default function LoginPage() {
+  return (
+    <Suspense>
+      <LoginForm />
+    </Suspense>
+  );
+}
+
+function LoginForm() {
   const { t } = useI18n();
   const { user, login } = useAuth();
   const router = useRouter();
+  const justRegistered = useSearchParams().get('registered') === '1';
 
   useEffect(() => {
     if (user) router.replace('/');
@@ -39,16 +51,18 @@ export default function LoginPage() {
     <div className="auth-page">
       <form className="auth-card" onSubmit={submit}>
         <div className="brand" style={{ padding: 0, marginBottom: 22 }}>
-          <div className="brand-mark">B</div>
+          <BrandMark />
           <div>
             <div className="brand-name">Bujo</div>
           </div>
         </div>
 
         <h1 className="auth-title">{t.auth.loginTitle}</h1>
-        <p className="muted" style={{ fontSize: 13.5, marginBottom: 22 }}>
+        <p className="muted" style={{ fontSize: 13.5, marginBottom: justRegistered ? 14 : 22 }}>
           {t.auth.loginSubtitle}
         </p>
+
+        {justRegistered && <div className="auth-notice">{t.auth.registeredNotice}</div>}
 
         <div className="field">
           <label htmlFor="email">{t.auth.emailLabel}</label>

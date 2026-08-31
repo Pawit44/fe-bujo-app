@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import { useAuth } from '@/lib/AuthProvider';
 import { ApiError } from '@/lib/api';
 import { useI18n } from '@/lib/i18n';
+import BrandMark from '@/components/BrandMark';
 
 export default function RegisterPage() {
   const { t } = useI18n();
@@ -29,7 +30,9 @@ export default function RegisterPage() {
     setSubmitting(true);
     try {
       await register(email.trim(), password, name.trim());
-      router.replace('/');
+      // The account exists but has no session — send them to sign in, with a
+      // note so the redirect doesn't read as the form having failed.
+      router.replace('/login?registered=1');
     } catch (err) {
       setError(err instanceof ApiError ? err.message : 'Something went wrong');
     } finally {
@@ -41,7 +44,7 @@ export default function RegisterPage() {
     <div className="auth-page">
       <form className="auth-card" onSubmit={submit}>
         <div className="brand" style={{ padding: 0, marginBottom: 22 }}>
-          <div className="brand-mark">B</div>
+          <BrandMark />
           <div>
             <div className="brand-name">Bujo</div>
           </div>

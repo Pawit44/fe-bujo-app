@@ -42,9 +42,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(u);
   }, []);
 
+  // Registering creates the account but does not sign it in — the server
+  // issues no session cookie, so the new user is sent to /login to enter their
+  // password once before reaching the journal.
   const register = useCallback(async (email: string, password: string, name: string) => {
-    const u = await api.register({ email, password, name });
-    setUser(u);
+    await api.register({ email, password, name });
   }, []);
 
   const logout = useCallback(async () => {

@@ -2,6 +2,7 @@
 
 import { useEffect, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
+import { useScrollLock } from '@/lib/useScrollLock';
 
 /**
  * Renders its content into a portal on `document.body` instead of in place.
@@ -28,11 +29,18 @@ export default function Modal({
     return () => document.removeEventListener('keydown', onKey);
   }, [onClose]);
 
+  useScrollLock(true);
+
   if (typeof document === 'undefined') return null;
 
   return createPortal(
-    <div className="overlay" onClick={onClose}>
-      <div className={`modal ${className}`} onClick={(e) => e.stopPropagation()}>
+    <div className="overlay" onClick={onClose} role="presentation">
+      <div
+        className={`modal ${className}`}
+        role="dialog"
+        aria-modal="true"
+        onClick={(e) => e.stopPropagation()}
+      >
         {children}
       </div>
     </div>,

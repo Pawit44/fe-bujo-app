@@ -17,6 +17,10 @@
   --ink-soft: #4a4a45;
   --ink-muted: #8a8a82;
   --ink-faint: #b6b6ae;
+  /* One step further from the paper than --ink, for the hover state of
+     surfaces that are already painted in --ink. Each theme pushes it in its
+     own direction: darker on a light theme, lighter on a dark one. */
+  --ink-strong: #000000;
 
   /* Lines */
   --line: #ececE7;
@@ -32,6 +36,14 @@
   --done: #6f8f6a;
   --priority: #b4735a;
   --inspiration: #b39449;
+
+  /* Danger — solid fill for destructive buttons, plus a tinted pair for
+     inline error messages. */
+  --danger: #b3524a;
+  --danger-hover: #9c453e;
+  --danger-ink: #ffffff;
+  --danger-soft: #fbeceb;
+  --danger-soft-ink: #a13f37;
 }
 
 /* Dusk — a dark, low-glare theme for the same layout. */
@@ -45,6 +57,10 @@
   --ink-soft: #c6c6c2;
   --ink-muted: #92928d;
   --ink-faint: #616159;
+  /* Brighter than --ink, not darker: on this theme --ink is the light
+     colour, so a primary button hovers *towards* white. Reusing the light
+     theme's #000 here painted black text on a black fill. */
+  --ink-strong: #ffffff;
 
   --line: #313338;
   --line-strong: #3c3e44;
@@ -57,6 +73,12 @@
   --done: #8fb388;
   --priority: #d38f70;
   --inspiration: #d4b566;
+
+  --danger: #c96a60;
+  --danger-hover: #d97d72;
+  --danger-ink: #1c1d20;
+  --danger-soft: #3a2523;
+  --danger-soft-ink: #f0b3ab;
 }
 
 /* Sage — the same paper-white feel, with a green accent instead of blue. */
@@ -70,6 +92,7 @@
   --ink-soft: #494e44;
   --ink-muted: #868c7c;
   --ink-faint: #b4b9a9;
+  --ink-strong: #000000;
 
   --line: #e8ece2;
   --line-strong: #dbe0d1;
@@ -82,6 +105,12 @@
   --done: #6f8f6a;
   --priority: #b4735a;
   --inspiration: #a98f3f;
+
+  --danger: #b3524a;
+  --danger-hover: #9c453e;
+  --danger-ink: #ffffff;
+  --danger-soft: #fbeceb;
+  --danger-soft-ink: #a13f37;
 }
 
 :root {
@@ -99,9 +128,10 @@
 
   /* Type — Inter/Newsreader have no Thai glyphs, so the browser falls back
      per-character to Noto Sans Thai / Kanit for Thai text automatically;
-     no locale switching needed. */
-  --font-sans: 'Inter', 'Noto Sans Thai', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-  --font-serif: 'Newsreader', 'Kanit', ui-serif, Georgia, 'Times New Roman', serif;
+     no locale switching needed. The families come from next/font (see
+     app/layout.tsx), which self-hosts them and exposes each as a variable. */
+  --font-sans: var(--font-inter), var(--font-noto-thai), ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-serif: var(--font-newsreader), var(--font-kanit), ui-serif, Georgia, 'Times New Roman', serif;
   --font-mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, monospace;
 
   /* Motion */
@@ -216,6 +246,7 @@ ol {
 .shell {
   display: flex;
   min-height: 100vh;
+  min-height: 100dvh;
 }
 
 .main {
@@ -291,18 +322,14 @@ ol {
   color: var(--ink);
 }
 
+/* The logo image itself carries the mark, so no tile, fill or shadow behind
+   it — BrandMark swaps between the light and dark artwork per theme. */
 .brand-mark {
-  width: 38px;
-  height: 38px;
-  border-radius: 11px;
-  background: var(--ink);
-  color: var(--paper);
-  display: grid;
-  place-items: center;
-  font-family: var(--font-serif);
-  font-size: 19px;
-  letter-spacing: 0.02em;
-  box-shadow: var(--shadow-sm);
+  width: 42px;
+  height: 28px; /* the artwork is 3:2 — a square box would letterbox it */
+  flex-shrink: 0;
+  object-fit: contain;
+  user-select: none;
 }
 
 .brand-name {
@@ -523,21 +550,24 @@ ol {
 }
 
 .btn-primary:hover {
-  background: #000;
+  background: var(--ink-strong);
+  border-color: var(--ink-strong);
+  /* Stay locked to the fill's opposite. The old rule hardcoded a black fill,
+     which on the dark theme sat under near-black label text. */
   color: var(--paper);
 }
 
 .btn-danger {
-  background: #b3524a;
-  border-color: #b3524a;
-  color: #fff;
+  background: var(--danger);
+  border-color: var(--danger);
+  color: var(--danger-ink);
   box-shadow: var(--shadow-sm);
 }
 
 .btn-danger:hover {
-  background: #9c453e;
-  border-color: #9c453e;
-  color: #fff;
+  background: var(--danger-hover);
+  border-color: var(--danger-hover);
+  color: var(--danger-ink);
 }
 
 .btn-ghost {
@@ -787,7 +817,7 @@ ol {
 }
 
 .act.danger:hover {
-  color: #b3524a;
+  color: var(--danger);
 }
 
 /* --------------------------------------------------------------------------
@@ -1334,9 +1364,19 @@ ol {
   z-index: 60;
   background: rgba(27, 27, 25, 0.28);
   backdrop-filter: blur(3px);
-  display: grid;
-  place-items: center;
+  /* flex + `margin: auto` on the modal, not `place-items: center`: a centred
+     grid item taller than the overlay overflows *both* ways, putting its top
+     above the scroll origin where it can never be reached. */
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
   padding: 24px;
+  overflow-y: auto;
+  /* Keep a scroll gesture that reaches the modal's end from continuing into
+     the page behind it — the reason the help sheet felt impossible to scroll
+     on a phone. */
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
   animation: fade 160ms var(--ease) both;
 }
 
@@ -1351,10 +1391,20 @@ ol {
 
 .modal {
   width: min(460px, 100%);
+  /* Centres while it fits, and simply sits at the top once it doesn't. */
+  margin: auto;
   background: var(--paper);
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow-lg);
   padding: 26px;
+  /* Any modal — not just the help sheet — scrolls inside itself rather than
+     growing past the viewport. dvh follows the mobile URL bar as it hides;
+     vh does not, and cut the last rows off on a phone. */
+  max-height: calc(100vh - 48px);
+  max-height: calc(100dvh - 48px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
   animation: pop 180ms var(--ease) both;
 }
 
@@ -1368,8 +1418,8 @@ ol {
 
 .modal-help {
   width: min(520px, 100%);
-  max-height: min(640px, 85vh);
-  overflow-y: auto;
+  max-height: min(640px, calc(100vh - 48px));
+  max-height: min(640px, calc(100dvh - 48px));
 }
 
 .help-section {
@@ -1653,13 +1703,19 @@ ol {
     position: fixed;
     top: 0;
     left: 0;
+    /* dvh, not vh: with the browser's URL bar showing, 100vh is taller than
+       what is actually on screen, so the account row and legal links at the
+       bottom of the drawer sat below the fold with no way to reach them. */
     height: 100vh;
-    width: min(300px, 84vw);
+    height: 100dvh;
+    width: min(320px, 86vw);
     z-index: 70;
     border-right: 1px solid var(--line);
     box-shadow: var(--shadow-lg);
     transform: translateX(-100%);
     transition: transform var(--normal);
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
   }
 
   .sidebar.mobile-open {
@@ -1713,12 +1769,145 @@ ol {
     padding: 5px 8px;
   }
 
+  /* Give the dialog the width it needs on a small screen — a 24px gutter on
+     each side left the help sheet's two-column key squeezed into nothing. */
+  .overlay {
+    padding: 12px;
+    align-items: flex-end; /* rises from the bottom, within thumb reach */
+  }
+
   .modal {
     padding: 20px;
+    border-radius: var(--radius-lg);
+    max-height: calc(100vh - 24px);
+    max-height: calc(100dvh - 24px);
+  }
+
+  .modal-help {
+    max-height: calc(100vh - 24px);
+    max-height: calc(100dvh - 24px);
+  }
+
+  /* Stack the buttons and let them fill the row, so no action ends up as a
+     narrow target in the corner. */
+  .modal-actions {
+    flex-direction: column-reverse;
+  }
+
+  .modal-actions .btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .help-grid {
+    grid-template-columns: 1fr 1fr;
   }
 
   .monthly-layout {
     gap: 16px;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Touch input
+   Rules that apply by capability rather than by width — a small window on a
+   laptop still has a mouse, and a large tablet still has fingers.
+   -------------------------------------------------------------------------- */
+
+@media (pointer: coarse) {
+  /* iOS Safari zooms the whole page when a focused control's text is under
+     16px, which then leaves the layout scrolled sideways. The app's 15px body
+     size is fine to read but has to be bumped for anything typed into. */
+  input,
+  textarea,
+  select {
+    font-size: 16px;
+  }
+
+  /* Comfortable finger targets. These are 32px squares tuned for a cursor;
+     a fingertip needs closer to 44px, and several of them (the per-entry
+     actions especially) sit right next to each other. */
+  .act,
+  .btn-icon,
+  .help-btn,
+  .theme-toggle,
+  .sidebar-close,
+  .icon-picker button {
+    min-width: 40px;
+    min-height: 40px;
+  }
+
+  .hamburger-btn {
+    width: 42px;
+    height: 42px;
+  }
+
+  .btn {
+    padding: 10px 16px;
+  }
+
+  .btn-sm {
+    padding: 8px 12px;
+  }
+
+  .nav-item {
+    padding-top: 9px;
+    padding-bottom: 9px;
+  }
+
+  /* Entry row actions are revealed on hover on desktop; there is no hover on
+     a touch screen, so they must simply be there. */
+  .entry .entry-actions {
+    opacity: 1;
+  }
+}
+
+@media (hover: none) {
+  /* Without a pointer that can leave, :hover latches on after a tap and the
+     element keeps its hovered colours until something else is tapped. Each
+     rule below restores that element's resting appearance, so a tapped row
+     doesn't stay lit; `:active` still gives immediate press feedback. */
+  .btn:hover {
+    background: var(--paper);
+    color: var(--ink-soft);
+  }
+
+  .btn-ghost:hover {
+    background: transparent;
+  }
+
+  .btn-primary:hover {
+    background: var(--ink);
+    border-color: var(--ink);
+    color: var(--paper);
+  }
+
+  .btn-danger:hover {
+    background: var(--danger);
+    border-color: var(--danger);
+    color: var(--danger-ink);
+  }
+
+  .nav-item:hover {
+    background: transparent;
+    color: var(--ink-soft);
+  }
+
+  .nav-item.active:hover {
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+
+  .index-line:hover {
+    background: transparent;
+  }
+
+  .act:hover,
+  .help-btn:hover,
+  .hamburger-btn:hover,
+  .sidebar-close:hover {
+    background: transparent;
+    color: var(--ink-faint);
   }
 }
 
@@ -1728,6 +1917,7 @@ ol {
 
 .auth-page {
   min-height: 100vh;
+  min-height: 100dvh;
   display: grid;
   place-items: center;
   padding: 24px;
@@ -1735,6 +1925,7 @@ ol {
 
 .legal-page {
   min-height: 100vh;
+  min-height: 100dvh;
   padding: 48px 24px 80px;
   display: flex;
   justify-content: center;
@@ -1800,9 +1991,20 @@ ol {
   letter-spacing: -0.01em;
 }
 
+/* Confirmation that registration worked, shown on the login form the new
+   account is redirected to. */
+.auth-notice {
+  background: var(--accent-soft);
+  color: var(--accent);
+  border-radius: var(--radius-sm);
+  padding: 9px 12px;
+  font-size: 13px;
+  margin-bottom: 14px;
+}
+
 .auth-error {
-  background: #fbeceb;
-  color: #a13f37;
+  background: var(--danger-soft);
+  color: var(--danger-soft-ink);
   border-radius: var(--radius-sm);
   padding: 9px 12px;
   font-size: 13px;
@@ -1851,6 +2053,7 @@ ol {
 
 .auth-loading {
   min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   flex-direction: column;
   align-items: center;

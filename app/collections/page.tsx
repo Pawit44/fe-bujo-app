@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { Inbox } from 'lucide-react';
 import { api } from '@/lib/api';
+import { invalidateCollections } from '@/lib/useCollections';
 import { useI18n } from '@/lib/i18n';
 import { CollectionIcon, COLLECTION_ICONS, DEFAULT_COLLECTION_ICON } from '@/components/icons';
 import Modal from '@/components/Modal';
@@ -43,6 +44,7 @@ export default function CollectionsPage() {
       setIcon(DEFAULT_COLLECTION_ICON);
       setOpen(false);
       await load();
+      invalidateCollections(); // the sidebar caches this list — tell it to refetch
     } catch (e) {
       setError(e instanceof ApiError ? e.message : 'Something went wrong');
     } finally {

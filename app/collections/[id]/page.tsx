@@ -7,6 +7,7 @@ import EntryList from '@/components/EntryList';
 import ErrorToast from '@/components/ErrorToast';
 import { api } from '@/lib/api';
 import { useEntries } from '@/lib/useEntries';
+import { invalidateCollections } from '@/lib/useCollections';
 import { useI18n } from '@/lib/i18n';
 import { CollectionIcon } from '@/components/icons';
 import Modal from '@/components/Modal';
@@ -31,6 +32,7 @@ export default function CollectionPage({ params }: { params: Promise<{ id: strin
 
   const remove = async () => {
     await api.deleteCollection(collectionId);
+    invalidateCollections(); // drop it from the sidebar's cached list
     router.push('/collections');
     router.refresh();
   };
@@ -39,6 +41,7 @@ export default function CollectionPage({ params }: { params: Promise<{ id: strin
     if (!collection) return;
     const saved = await api.updateCollection(collectionId, { pinned: !collection.pinned });
     setCollection(saved);
+    invalidateCollections(); // pinning reorders the sidebar
   };
 
   const open = journal.entries.filter((e) => e.status === 'open').length;

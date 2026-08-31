@@ -4,15 +4,16 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { CircleHelp, Leaf, LogOut, Menu, Moon, Plus, ShieldCheck, Sun, Trash2, X } from 'lucide-react';
-import { api } from '@/lib/api';
+import { useCollections } from '@/lib/useCollections';
 import { useI18n, LOCALES } from '@/lib/i18n';
 import { useTheme } from '@/lib/ThemeProvider';
 import { useAuth } from '@/lib/AuthProvider';
+import { useScrollLock } from '@/lib/useScrollLock';
 import { nextThemeId } from '@/lib/theme';
 import { CollectionIcon, LOG_ICONS } from './icons';
+import BrandMark from './BrandMark';
 import HelpModal from './HelpModal';
 import DeleteAccountModal from './DeleteAccountModal';
-import type { Collection } from '@/lib/types';
 
 const ONBOARDED_KEY = 'bujo:onboarded';
 
@@ -20,7 +21,7 @@ const THEME_ICONS = { paper: Sun, dusk: Moon, sage: Leaf } as const;
 
 export default function Sidebar() {
   const pathname = usePathname();
-  const [collections, setCollections] = useState<Collection[]>([]);
+  const collections = useCollections();
   const [helpOpen, setHelpOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -35,22 +36,14 @@ export default function Sidebar() {
     { href: '/weekly', icon: LOG_ICONS.weekly, label: t.sidebar.logs.weekly },
   ];
 
-  useEffect(() => {
-    let alive = true;
-    api
-      .collections()
-      .then((data) => alive && setCollections(data))
-      .catch(() => undefined);
-    return () => {
-      alive = false;
-    };
-    // Re-read the list whenever the route changes, so new collections show up.
-  }, [pathname]);
-
   // A route change means a nav link was just followed — close the mobile drawer.
   useEffect(() => {
     setMobileOpen(false);
   }, [pathname]);
+
+  // While the drawer is open it owns the screen; without this the page behind
+  // it scrolls under the reader's finger instead of the drawer's own list.
+  useScrollLock(mobileOpen);
 
   // Show the guided tour once, automatically, the first time someone opens the app.
   useEffect(() => {
@@ -74,7 +67,7 @@ export default function Sidebar() {
           <Menu size={20} strokeWidth={1.8} />
         </button>
         <Link href="/" className="brand">
-          <div className="brand-mark">B</div>
+          <BrandMark />
           <div className="brand-name">Bujo</div>
         </Link>
       </div>
@@ -84,7 +77,7 @@ export default function Sidebar() {
       <aside className={`sidebar ${mobileOpen ? 'mobile-open' : ''}`}>
         <div className="brand-row">
           <Link href="/" className="brand">
-            <div className="brand-mark">B</div>
+            <BrandMark />
             <div>
               <div className="brand-name">Bujo</div>
               <div className="brand-sub">{t.sidebar.brandSub}</div>

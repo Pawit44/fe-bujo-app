@@ -182,6 +182,7 @@ const th: Dictionary = {
     namePlaceholder: 'ชื่อของคุณ',
     loginTitle: 'ยินดีต้อนรับกลับ',
     loginSubtitle: 'เข้าสู่ระบบเพื่อใช้งานบันทึกของคุณ',
+    registeredNotice: 'สร้างบัญชีเรียบร้อยแล้ว เข้าสู่ระบบเพื่อเริ่มใช้งาน',
     loginButton: 'เข้าสู่ระบบ',
     loginSubmitting: 'กำลังเข้าสู่ระบบ…',
     registerTitle: 'สร้างบันทึกของคุณ',
