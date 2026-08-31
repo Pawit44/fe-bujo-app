@@ -36,6 +36,26 @@ function English() {
     <Shell title="Terms of Service" updated={`Last updated: ${LAST_UPDATED}`}>
       <p>By creating an account you agree to these terms.</p>
 
+      <h2>About jodtask</h2>
+      <p>
+        jodtask (running here as Bujo) is a personal side project, built for learning, practicing software
+        development, and personal use — not for commercial operation or profit of any kind.
+      </p>
+      <p>
+        The service is provided "as is," with no guarantee of accuracy, completeness, or continuous availability.
+        The developer reserves the right to improve, change, suspend, or discontinue it at any time without prior
+        notice, since this is a project maintained by one person in their spare time.
+      </p>
+      <p>
+        The developer is not liable for any damages, direct or indirect, arising from using the service or from its
+        interruption — including lost or inaccessible data. Keep your own backup of anything that matters to you.
+      </p>
+      <p>
+        Using this service is voluntary, and it comes with the understanding that this is an experimental, personal
+        project that may have technical issues. Found a bug, or have a suggestion? Reach out at{' '}
+        <a href="mailto:pawit.ch@gmail.com">pawit.ch@gmail.com</a>.
+      </p>
+
       <h2>The service</h2>
       <p>
         Bujo is a personal bullet-journal tool. It's provided "as is," without warranty of any kind — there's no
@@ -88,6 +108,25 @@ function Thai() {
   return (
     <Shell title="ข้อกำหนดการให้บริการ" updated={`อัปเดตล่าสุด: ${LAST_UPDATED}`}>
       <p>การสร้างบัญชีถือว่าคุณยอมรับข้อกำหนดนี้</p>
+
+      <h2>เกี่ยวกับ jodtask</h2>
+      <p>
+        jodtask (ที่เปิดให้ใช้งานในชื่อ Bujo) เป็นโครงการส่วนบุคคล (personal side project) ที่พัฒนาขึ้นเพื่อการเรียนรู้
+        ฝึกฝนทักษะการพัฒนาซอฟต์แวร์ และใช้งานส่วนตัว ไม่ได้มีเจตนาดำเนินการในเชิงพาณิชย์หรือแสวงหาผลกำไรแต่อย่างใด
+      </p>
+      <p>
+        บริการนี้ให้ใช้งาน "ตามสภาพที่เป็นอยู่" (as-is) โดยไม่มีการรับประกันความถูกต้อง ความสมบูรณ์ หรือความพร้อมใช้งานตลอดเวลา
+        ผู้พัฒนาขอสงวนสิทธิ์ในการปรับปรุง แก้ไข ระงับ หรือยกเลิกการให้บริการได้ตลอดเวลาโดยไม่จำเป็นต้องแจ้งล่วงหน้า
+        เนื่องจากเป็นโครงการที่ดูแลโดยบุคคลคนเดียวในเวลาว่าง
+      </p>
+      <p>
+        ผู้พัฒนาไม่รับผิดชอบต่อความเสียหายใด ๆ ไม่ว่าทางตรงหรือทางอ้อม ที่อาจเกิดขึ้นจากการใช้งานหรือการหยุดชะงักของบริการ
+        รวมถึงกรณีข้อมูลสูญหายหรือเข้าถึงไม่ได้ ผู้ใช้งานควรสำรองข้อมูลสำคัญของตนเองไว้เสมอ
+      </p>
+      <p>
+        ผู้ใช้งานตกลงใช้บริการนี้ด้วยความสมัครใจของตนเอง และรับทราบว่านี่คือโครงการทดลอง/ส่วนตัวที่อาจมีข้อบกพร่องทางเทคนิคเกิดขึ้นได้
+        หากพบปัญหาหรือมีข้อเสนอแนะ สามารถติดต่อได้ที่ <a href="mailto:pawit.ch@gmail.com">pawit.ch@gmail.com</a>
+      </p>
 
       <h2>เกี่ยวกับบริการ</h2>
       <p>

@@ -192,19 +192,22 @@ export default function Sidebar() {
           <span aria-hidden="true">·</span>
           <Link href="/terms">{t.auth.termsOfService}</Link>
         </div>
+        <div className="sidebar-credit">{t.sidebar.credit}</div>
       </div>
 
       {user && (
         <div className="sidebar-account">
-          <div className="account-avatar">{(user.name || user.email)[0]?.toUpperCase()}</div>
-          <div className="account-info">
-            <div className="account-name" title={user.name || user.email}>
-              {user.name || user.email}
+          <Link href="/profile" className="account-link" title={t.profile.navTitle}>
+            <div className="account-avatar">{(user.name || user.email)[0]?.toUpperCase()}</div>
+            <div className="account-info">
+              <div className="account-name" title={user.name || user.email}>
+                {user.name || user.email}
+              </div>
+              <div className="account-email" title={user.email}>
+                {user.email}
+              </div>
             </div>
-            <div className="account-email" title={user.email}>
-              {user.email}
-            </div>
-          </div>
+          </Link>
           <button
             type="button"
             className="act"

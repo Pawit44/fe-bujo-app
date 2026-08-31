@@ -36,10 +36,10 @@ function English() {
     <Shell title="Privacy Policy" updated={`Last updated: ${LAST_UPDATED}`}>
       <p>
         This policy explains what Bujo ("the service") collects about you, why, and what rights you have over it.
-        Bujo is a personal bullet-journal app; the operator running this instance is
-        <strong> [fill in: operator name and contact email] </strong>
-        — replace this placeholder before inviting real users, since Thailand's Personal Data Protection Act (PDPA)
-        requires a data controller to be identifiable and reachable.
+        Bujo is a personal bullet-journal app (also known as jodtask); the operator running this instance is
+        <strong> Mr. Pawit CH — a 4th-year Computer Engineering student at Suranaree University of Technology </strong>
+        , reachable at <a href="mailto:pawit.ch@gmail.com">pawit.ch@gmail.com</a>, which is who Thailand's Personal
+        Data Protection Act (PDPA) identifies as the data controller for this service.
       </p>
 
       <h2>What we collect</h2>
@@ -100,10 +100,10 @@ function Thai() {
     <Shell title="นโยบายความเป็นส่วนตัว" updated={`อัปเดตล่าสุด: ${LAST_UPDATED}`}>
       <p>
         นโยบายนี้อธิบายว่า Bujo ("บริการ") เก็บข้อมูลอะไรเกี่ยวกับคุณ เพื่ออะไร และคุณมีสิทธิ์อะไรบ้าง Bujo
-        เป็นแอปบันทึกส่วนตัวแบบ bullet journal ผู้ให้บริการที่ดูแลระบบนี้คือ
-        <strong> [กรอกชื่อผู้ให้บริการและอีเมลติดต่อ] </strong>
-        — โปรดแก้ไขข้อความนี้ก่อนเปิดให้ผู้ใช้จริงเข้าใช้งาน เนื่องจากพระราชบัญญัติคุ้มครองข้อมูลส่วนบุคคล (PDPA)
-        กำหนดให้ผู้ควบคุมข้อมูลต้องระบุตัวตนและติดต่อได้
+        (หรือชื่อ jodtask) เป็นแอปบันทึกส่วนตัวแบบ bullet journal ผู้ให้บริการที่ดูแลระบบนี้คือ
+        <strong> นายภาวิฒ ฉ. — นักศึกษาชั้นปีที่ 4 สาขาวิชาวิศวกรรมคอมพิวเตอร์ มหาวิทยาลัยเทคโนโลยีสุรนารี </strong>
+        ติดต่อได้ที่ <a href="mailto:pawit.ch@gmail.com">pawit.ch@gmail.com</a> ซึ่งเป็นผู้ควบคุมข้อมูลตาม
+        พระราชบัญญัติคุ้มครองข้อมูลส่วนบุคคล (PDPA) ของบริการนี้
       </p>
 
       <h2>ข้อมูลที่เราเก็บ</h2>

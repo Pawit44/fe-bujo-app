@@ -1090,6 +1090,87 @@ ol {
   }
 }
 
+/* --------------------------------------------------------------------------
+   Profile page
+   -------------------------------------------------------------------------- */
+
+.profile-hero {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.profile-avatar {
+  flex-shrink: 0;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--accent-soft);
+  color: var(--accent);
+  display: grid;
+  place-items: center;
+  font-family: var(--font-serif);
+  font-size: 24px;
+}
+
+.profile-name {
+  font-family: var(--font-serif);
+  font-size: 19px;
+  letter-spacing: -0.01em;
+}
+
+.profile-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+}
+
+.profile-stat-value {
+  font-family: var(--font-serif);
+  font-size: 26px;
+  line-height: 1;
+}
+
+.profile-stat-label {
+  font-size: 12px;
+}
+
+.profile-stat-ring {
+  font-family: var(--font-serif);
+  font-size: 20px;
+  color: var(--accent);
+}
+
+.profile-log-tile {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13.5px;
+  font-weight: 550;
+  color: var(--ink-soft);
+  transition: transform var(--fast), box-shadow var(--fast);
+}
+
+.profile-log-tile:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+
+.profile-review-banner.is-clear {
+  background: var(--paper-sunken);
+  border-color: var(--line);
+}
+
+.profile-review-banner.is-clear .review-banner-icon {
+  color: var(--done);
+}
+
+.profile-review-banner.is-clear .review-banner-title {
+  color: var(--ink-soft);
+  font-weight: 500;
+}
+
 @media (max-width: 640px) {
   .recent-activity-hint {
     display: none;
@@ -2252,6 +2333,13 @@ ol {
   text-decoration: underline;
 }
 
+.sidebar-credit {
+  margin-top: 4px;
+  font-size: 10.5px;
+  color: var(--ink-faint);
+  opacity: 0.8;
+}
+
 .sidebar-account {
   display: flex;
   align-items: center;
@@ -2272,6 +2360,20 @@ ol {
   font-family: var(--font-serif);
   font-size: 14px;
   flex-shrink: 0;
+}
+
+.account-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+  border-radius: var(--radius-sm);
+  transition: background var(--fast);
+}
+
+.account-link:hover {
+  background: var(--paper-hover);
 }
 
 .account-info {
