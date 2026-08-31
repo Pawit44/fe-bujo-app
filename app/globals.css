@@ -876,11 +876,53 @@ ol {
    managing one kind never means scrolling past the others.
    -------------------------------------------------------------------------- */
 
+.entry-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
 .entry-tabs {
   display: flex;
   flex-wrap: wrap;
   gap: 4px;
-  margin-bottom: 8px;
+}
+
+/* Open / Done / All — separate from the type tabs above (task/event/note/
+   idea) because they answer a different question: type tabs pick *what kind*
+   of bullet to look at, this picks *how far along* it is. Reuses the
+   .lang-toggle segmented-control look so the two pill-groups in this UI stay
+   visually consistent. */
+.status-toggle {
+  display: flex;
+  gap: 2px;
+  padding: 2px;
+  background: var(--paper-sunken);
+  border-radius: 9px;
+  flex-shrink: 0;
+}
+
+.status-toggle button {
+  padding: 4px 10px;
+  border-radius: 7px;
+  font-size: 11.5px;
+  font-weight: 550;
+  color: var(--ink-muted);
+  white-space: nowrap;
+  transition: background var(--fast), color var(--fast);
+}
+
+.status-toggle button:hover {
+  color: var(--ink);
+}
+
+.status-toggle button.on {
+  background: var(--paper);
+  color: var(--ink);
+  box-shadow: var(--shadow-xs);
 }
 
 .entry-tab {

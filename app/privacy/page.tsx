@@ -38,7 +38,7 @@ function English() {
         This policy explains what Bujo ("the service") collects about you, why, and what rights you have over it.
         Bujo is a personal bullet-journal app (also known as jodtask); the operator running this instance is
         <strong> Mr. Pawit CH — a 4th-year Computer Engineering student at Suranaree University of Technology </strong>
-        , reachable at <a href="mailto:pawit.ch@gmail.com">pawit.ch@gmail.com</a>, which is who Thailand's Personal
+        , reachable at <a href="mailto:pawit.chsn@gmail.com">pawit.chsn@gmail.com</a>, which is who Thailand's Personal
         Data Protection Act (PDPA) identifies as the data controller for this service.
       </p>
 
@@ -102,7 +102,7 @@ function Thai() {
         นโยบายนี้อธิบายว่า Bujo ("บริการ") เก็บข้อมูลอะไรเกี่ยวกับคุณ เพื่ออะไร และคุณมีสิทธิ์อะไรบ้าง Bujo
         (หรือชื่อ jodtask) เป็นแอปบันทึกส่วนตัวแบบ bullet journal ผู้ให้บริการที่ดูแลระบบนี้คือ
         <strong> นายภาวิฒ ฉ. — นักศึกษาชั้นปีที่ 4 สาขาวิชาวิศวกรรมคอมพิวเตอร์ มหาวิทยาลัยเทคโนโลยีสุรนารี </strong>
-        ติดต่อได้ที่ <a href="mailto:pawit.ch@gmail.com">pawit.ch@gmail.com</a> ซึ่งเป็นผู้ควบคุมข้อมูลตาม
+        ติดต่อได้ที่ <a href="mailto:pawit.chsn@gmail.com">pawit.chsn@gmail.com</a> ซึ่งเป็นผู้ควบคุมข้อมูลตาม
         พระราชบัญญัติคุ้มครองข้อมูลส่วนบุคคล (PDPA) ของบริการนี้
       </p>
 

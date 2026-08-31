@@ -105,6 +105,10 @@ const th: Dictionary = {
     emptyEvent: 'ยังไม่มีกิจกรรมตรงนี้',
     emptyNote: 'ยังไม่มีโน้ตตรงนี้',
     emptyIdea: 'ยังไม่มีไอเดียตรงนี้',
+    statusFilterLabel: 'กรองตามสถานะ',
+    statusAll: 'ทั้งหมด',
+    statusOpen: 'ค้าง',
+    statusDone: 'เสร็จแล้ว',
   },
   index: {
     eyebrow: 'สารบัญ',

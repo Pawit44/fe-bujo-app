@@ -53,7 +53,7 @@ function English() {
       <p>
         Using this service is voluntary, and it comes with the understanding that this is an experimental, personal
         project that may have technical issues. Found a bug, or have a suggestion? Reach out at{' '}
-        <a href="mailto:pawit.ch@gmail.com">pawit.ch@gmail.com</a>.
+        <a href="mailto:pawit.chsn@gmail.com">pawit.chsn@gmail.com</a>.
       </p>
 
       <h2>The service</h2>
@@ -125,7 +125,7 @@ function Thai() {
       </p>
       <p>
         ผู้ใช้งานตกลงใช้บริการนี้ด้วยความสมัครใจของตนเอง และรับทราบว่านี่คือโครงการทดลอง/ส่วนตัวที่อาจมีข้อบกพร่องทางเทคนิคเกิดขึ้นได้
-        หากพบปัญหาหรือมีข้อเสนอแนะ สามารถติดต่อได้ที่ <a href="mailto:pawit.ch@gmail.com">pawit.ch@gmail.com</a>
+        หากพบปัญหาหรือมีข้อเสนอแนะ สามารถติดต่อได้ที่ <a href="mailto:pawit.chsn@gmail.com">pawit.chsn@gmail.com</a>
       </p>
 
       <h2>เกี่ยวกับบริการ</h2>

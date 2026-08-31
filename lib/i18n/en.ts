@@ -108,6 +108,10 @@ const en = {
     emptyEvent: 'No events here yet.',
     emptyNote: 'No notes here yet.',
     emptyIdea: 'No ideas here yet.',
+    statusFilterLabel: 'Filter by status',
+    statusAll: 'All',
+    statusOpen: 'Open',
+    statusDone: 'Done',
   },
   index: {
     eyebrow: 'Index',

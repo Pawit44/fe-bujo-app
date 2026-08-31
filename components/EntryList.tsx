@@ -5,16 +5,8 @@ import { CalendarClock, ListTodo, Sparkles, StickyNote, type LucideIcon } from '
 import EntryRow from './EntryRow';
 import QuickAdd from './QuickAdd';
 import { useI18n } from '@/lib/i18n';
+import { tabOf, matchesStatus, type EntryTab, type StatusFilter } from '@/lib/entryFilters';
 import type { Collection, Entry, EntryDraft, EntryType, MigrateTarget } from '@/lib/types';
-
-type EntryTab = 'task' | 'event' | 'note' | 'idea';
-
-/** Every entry belongs to exactly one tab — inspiration wins over type, so an
- * idea never also shows up under its underlying type and nothing is counted twice. */
-function tabOf(entry: Entry): EntryTab {
-  if (entry.inspiration) return 'idea';
-  return entry.type;
-}
 
 interface Props {
   entries: Entry[];
@@ -51,6 +43,7 @@ export default function EntryList({
 }: Props) {
   const { t } = useI18n();
   const [tab, setTab] = useState<EntryTab>('task');
+  const [status, setStatus] = useState<StatusFilter>('all');
   const [dragId, setDragId] = useState<number | null>(null);
   const [overId, setOverId] = useState<number | null>(null);
 
@@ -61,13 +54,25 @@ export default function EntryList({
     { id: 'idea', label: t.entryTabs.idea, Icon: Sparkles },
   ];
 
+  const STATUS_FILTERS: { id: StatusFilter; label: string }[] = [
+    { id: 'all', label: t.entryTabs.statusAll },
+    { id: 'open', label: t.entryTabs.statusOpen },
+    { id: 'done', label: t.entryTabs.statusDone },
+  ];
+
+  // Tab badge counts reflect the active status filter too — switching to
+  // "done" and seeing every tab's count drop to what's actually done there
+  // is what makes the two filters read as combined, not two unrelated controls.
   const counts = useMemo(() => {
     const c: Record<EntryTab, number> = { task: 0, event: 0, note: 0, idea: 0 };
-    for (const e of entries) c[tabOf(e)]++;
+    for (const e of entries) if (matchesStatus(e, status)) c[tabOf(e)]++;
     return c;
-  }, [entries]);
+  }, [entries, status]);
 
-  const visible = useMemo(() => entries.filter((e) => tabOf(e) === tab), [entries, tab]);
+  const visible = useMemo(
+    () => entries.filter((e) => tabOf(e) === tab && matchesStatus(e, status)),
+    [entries, tab, status],
+  );
 
   const handleDrop = () => {
     if (dragId === null || overId === null || dragId === overId) {
@@ -104,22 +109,38 @@ export default function EntryList({
 
   return (
     <div className="entry-list">
-      <div className="entry-tabs" role="tablist">
-        {TABS.map((opt) => (
-          <button
-            key={opt.id}
-            type="button"
-            role="tab"
-            data-tab={opt.id}
-            aria-selected={tab === opt.id}
-            className={`entry-tab ${tab === opt.id ? 'on' : ''}`}
-            onClick={() => setTab(opt.id)}
-          >
-            <opt.Icon size={13} strokeWidth={1.8} />
-            {opt.label}
-            {counts[opt.id] > 0 && <span className="entry-tab-count">{counts[opt.id]}</span>}
-          </button>
-        ))}
+      <div className="entry-toolbar">
+        <div className="entry-tabs" role="tablist">
+          {TABS.map((opt) => (
+            <button
+              key={opt.id}
+              type="button"
+              role="tab"
+              data-tab={opt.id}
+              aria-selected={tab === opt.id}
+              className={`entry-tab ${tab === opt.id ? 'on' : ''}`}
+              onClick={() => setTab(opt.id)}
+            >
+              <opt.Icon size={13} strokeWidth={1.8} />
+              {opt.label}
+              {counts[opt.id] > 0 && <span className="entry-tab-count">{counts[opt.id]}</span>}
+            </button>
+          ))}
+        </div>
+
+        <div className="status-toggle" role="group" aria-label={t.entryTabs.statusFilterLabel}>
+          {STATUS_FILTERS.map((opt) => (
+            <button
+              key={opt.id}
+              type="button"
+              className={status === opt.id ? 'on' : ''}
+              aria-pressed={status === opt.id}
+              onClick={() => setStatus(opt.id)}
+            >
+              {opt.label}
+            </button>
+          ))}
+        </div>
       </div>
 
       {visible.length === 0 && <div className="empty">{emptyTexts[tab]}</div>}

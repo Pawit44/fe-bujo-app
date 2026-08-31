@@ -3,10 +3,10 @@
 import Link from 'next/link';
 import { AlertTriangle, RotateCcw } from 'lucide-react';
 import { formatDayLong, formatMonth, formatMonthShort, formatRange, fromISODate } from '@/lib/date';
-import { glyphFor } from '@/components/Bullet';
 import { useI18n } from '@/lib/i18n';
 import { useOverview } from '@/lib/useOverview';
 import { CollectionIcon, LOG_ICONS } from '@/components/icons';
+import RecentActivityList from '@/components/RecentActivityList';
 import type { Entry, IndexOverview } from '@/lib/types';
 
 /** Where tapping this entry on the Index page should take you — the exact
@@ -236,19 +236,7 @@ export default function IndexPage() {
               {t.index.recentActivityHint}
             </span>
           </div>
-          <div style={{ padding: '4px 8px 8px' }}>
-            {data.recent.map((entry) => (
-              <Link key={entry.id} href={entryHref(entry)} className={`entry recent-entry ${entry.status}`}>
-                <span className={`bullet ${entry.status} type-${entry.type}`} style={{ pointerEvents: 'none' }}>
-                  {glyphFor(entry.type, entry.status)}
-                </span>
-                <div className="entry-body">
-                  <span className="entry-text">{entry.content}</span>
-                  <div className="entry-meta">{recentMeta(entry)}</div>
-                </div>
-              </Link>
-            ))}
-          </div>
+          <RecentActivityList entries={data.recent} href={entryHref} meta={recentMeta} />
         </section>
       )}
 
