@@ -95,6 +95,10 @@ export default function IndexPage() {
   const done = data.totals.done;
   const total = data.totals.entries;
   const rate = total ? Math.round((done / total) * 100) : 0;
+  // Collections aren't month-scoped, so their activity is its own feed
+  // rather than mixed into the logs that actually are.
+  const monthlyLogRecent = data.recent.filter((e) => e.logKind !== 'collection');
+  const collectionRecent = data.recent.filter((e) => e.logKind === 'collection');
 
   return (
     <div className="page">
@@ -228,15 +232,32 @@ export default function IndexPage() {
         </section>
       </div>
 
-      {data.recent.length > 0 && (
+      {/* Two separate feeds, not one mixed one: a collection isn't scoped to
+          a month at all (it's an evergreen list), so folding its activity
+          into "this month" alongside the actually month-scoped logs made a
+          collection edit from three months ago look like it belonged here,
+          and hid which kind of thing a given row even was. */}
+      {monthlyLogRecent.length > 0 && (
         <section className="card" style={{ marginTop: 18 }}>
           <div className="card-head">
-            <h2 className="card-title">{t.index.recentActivityTitle}</h2>
+            <h2 className="card-title">{t.index.monthlyActivityTitle}</h2>
             <span className="muted recent-activity-hint" style={{ fontSize: 12 }}>
               {t.index.recentActivityHint}
             </span>
           </div>
-          <RecentActivityList entries={data.recent} href={entryHref} meta={recentMeta} />
+          <RecentActivityList entries={monthlyLogRecent} href={entryHref} meta={recentMeta} />
+        </section>
+      )}
+
+      {collectionRecent.length > 0 && (
+        <section className="card" style={{ marginTop: 18 }}>
+          <div className="card-head">
+            <h2 className="card-title">{t.index.collectionActivityTitle}</h2>
+            <span className="muted recent-activity-hint" style={{ fontSize: 12 }}>
+              {t.index.recentActivityHint}
+            </span>
+          </div>
+          <RecentActivityList entries={collectionRecent} href={entryHref} meta={recentMeta} />
         </section>
       )}
 

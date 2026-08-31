@@ -122,7 +122,10 @@ export default function CollectionPage({ params }: { params: Promise<{ id: strin
             </span>
           </div>
         </div>
-        <div style={{ padding: '12px 14px 18px' }}>
+        <p className="muted" style={{ fontSize: 12, padding: '12px 14px 0' }}>
+          {t.collection.addNote}
+        </p>
+        <div style={{ padding: '8px 14px 18px' }}>
           <EntryList
             entries={journal.entries}
             collections={all}
