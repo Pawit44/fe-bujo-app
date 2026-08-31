@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Inter, Kanit, Newsreader, Noto_Sans_Thai } from 'next/font/google';
 import Providers from '@/components/Providers';
 import AppShell from '@/components/AppShell';
@@ -9,6 +9,35 @@ import './globals.css';
 export const metadata: Metadata = {
   title: 'Bujo — Bullet Journal',
   description: 'A calm bullet journal: index, future log, monthly log and weekly log.',
+  // manifestlink + every iOS-specific tag below (apple-touch-icon,
+  // apple-mobile-web-app-capable/-title, the theme-color meta) are emitted by
+  // Next's metadata API from this one object — no hand-written <meta> tags.
+  manifest: '/manifest.json',
+  icons: {
+    icon: [
+      { url: '/icon-192.png', sizes: '192x192', type: 'image/png' },
+      { url: '/icon-512.png', sizes: '512x512', type: 'image/png' },
+    ],
+    // iOS ignores the web app manifest entirely and only ever looks for this
+    // link tag, which also has to be an opaque (non-transparent) PNG.
+    apple: [{ url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' }],
+  },
+  appleWebApp: {
+    // Without this, "Add to Home Screen" on iOS just bookmarks the page —
+    // every navigation still opens inside Safari's chrome (URL bar, tab
+    // switcher). This is what actually makes the installed icon launch as a
+    // standalone window with no browser UI.
+    capable: true,
+    statusBarStyle: 'black-translucent',
+    title: 'Bujo',
+  },
+};
+
+// theme-color lives on the separate `viewport` export (Next.js 14+), not on
+// `metadata` — this is what tints the OS status bar / task switcher to match
+// the icon's background instead of leaving it default white or black.
+export const viewport: Viewport = {
+  themeColor: '#1b1b19',
 };
 
 /*
@@ -70,6 +99,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang={DEFAULT_LOCALE} data-theme={DEFAULT_THEME} className={fontVariables} suppressHydrationWarning>
       <head>
+        {/* Next's `appleWebApp.capable` metadata (below) only emits the
+            newer `mobile-web-app-capable` tag. iOS versions before 17.4 don't
+            recognize that name and fall back to opening in Safari's normal
+            chrome, so the legacy Apple-prefixed tag is added by hand to cover
+            them too — both point at the same standalone-mode behavior. */}
+        <meta name="apple-mobile-web-app-capable" content="yes" />
         <script dangerouslySetInnerHTML={{ __html: bootScript }} />
       </head>
       <body suppressHydrationWarning>

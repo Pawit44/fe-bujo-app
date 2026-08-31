@@ -103,13 +103,12 @@ export default function RegisterPage() {
           <input type="checkbox" checked={agreed} onChange={(e) => setAgreed(e.target.checked)} required />
           <span>
             {t.auth.agreePrefix}{' '}
-            <Link href="/privacy" target="_blank" rel="noopener">
-              {t.auth.privacyPolicy}
-            </Link>{' '}
+            {/* Internal routes — target="_blank" used to force these open in
+                a new tab, which on an installed PWA pops the whole app out
+                into the system browser instead of navigating in place. */}
+            <Link href="/privacy">{t.auth.privacyPolicy}</Link>{' '}
             {t.auth.and}{' '}
-            <Link href="/terms" target="_blank" rel="noopener">
-              {t.auth.termsOfService}
-            </Link>
+            <Link href="/terms">{t.auth.termsOfService}</Link>
           </span>
         </label>
 
