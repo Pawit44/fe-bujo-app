@@ -1,8 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { AlertTriangle, RotateCcw, Sparkles, Star } from 'lucide-react';
-import { formatDayLong, formatMonth, formatMonthShort, formatRange, fromISODate } from '@/lib/date';
+import { AlertTriangle, RotateCcw } from 'lucide-react';
+import { formatDayLong, formatMonth, formatRange, fromISODate } from '@/lib/date';
 import { useI18n } from '@/lib/i18n';
 import { useOverview } from '@/lib/useOverview';
 import { CollectionIcon, LOG_ICONS } from '@/components/icons';
@@ -43,10 +43,10 @@ export default function IndexPage() {
   const { t } = useI18n();
   const { data, loading } = useOverview();
 
-  const LOG_META: Record<string, { href: string; Icon: (typeof LOG_ICONS)[keyof typeof LOG_ICONS]; blurb: string; label: string }> = {
-    future: { href: '/future', Icon: LOG_ICONS.future, blurb: t.index.blurbs.future, label: t.sidebar.logs.future },
-    monthly: { href: '/monthly', Icon: LOG_ICONS.monthly, blurb: t.index.blurbs.monthly, label: t.sidebar.logs.monthly },
-    weekly: { href: '/weekly', Icon: LOG_ICONS.weekly, blurb: t.index.blurbs.weekly, label: t.sidebar.logs.weekly },
+  const LOG_META: Record<string, { href: string; Icon: (typeof LOG_ICONS)[keyof typeof LOG_ICONS]; label: string }> = {
+    future: { href: '/future', Icon: LOG_ICONS.future, label: t.sidebar.logs.future },
+    monthly: { href: '/monthly', Icon: LOG_ICONS.monthly, label: t.sidebar.logs.monthly },
+    weekly: { href: '/weekly', Icon: LOG_ICONS.weekly, label: t.sidebar.logs.weekly },
   };
 
   /** The small tag under a recent-activity entry — which log it's in, and
@@ -82,46 +82,28 @@ export default function IndexPage() {
   if (!data) {
     return (
       <div className="page">
-        <div className="skeleton" style={{ height: 90, marginBottom: 28 }} />
-        <div className="grid grid-3">
-          {[0, 1, 2].map((i) => (
-            <div key={i} className="skeleton" style={{ height: 150 }} />
-          ))}
-        </div>
+        <div className="skeleton" style={{ height: 60, marginBottom: 20 }} />
+        <div className="skeleton" style={{ height: 200, marginBottom: 20 }} />
+        <div className="skeleton" style={{ height: 90 }} />
       </div>
     );
   }
 
   const today = fromISODate(data.today);
-  const done = data.totals.done;
-  const total = data.totals.entries;
-  const rate = total ? Math.round((done / total) * 100) : 0;
-  // Collections aren't month-scoped, so their activity is its own feed
-  // rather than mixed into the logs that actually are.
-  const monthlyLogRecent = data.recent.filter((e) => e.logKind !== 'collection');
-  const collectionRecent = data.recent.filter((e) => e.logKind === 'collection');
+  const weeklyLog = data.logs.find((l) => l.key === 'weekly');
+  const otherLogs = data.logs.filter((l) => l.key !== 'weekly');
+  const weeklyMeta = LOG_META.weekly;
+  const weeklyPct = weeklyLog?.total ? Math.round((weeklyLog.done / weeklyLog.total) * 100) : 0;
+  const weeklyPreview = weeklyLog ? previewFor('weekly', data) : undefined;
 
   return (
     <div className="page">
-      <header className="hero">
-        <div>
-          <div className="eyebrow">{t.index.eyebrow}</div>
-          <h1 className="hero-date">
-            {today.getDate()} {t.dates.months[today.getMonth()]}
-            <span style={{ color: 'var(--ink-faint)' }}> {today.getFullYear()}</span>
-          </h1>
-          <p className="page-sub">{t.index.subtitle}</p>
-        </div>
-
-        <div className="progress-ring">
-          <ProgressRing value={rate} />
-          <div>
-            <div className="ring-value">{rate}%</div>
-            <div className="muted" style={{ fontSize: 12.5 }}>
-              {t.index.entriesDone(done, total)}
-            </div>
-          </div>
-        </div>
+      <header className="hero hero-compact">
+        <div className="eyebrow">{t.index.eyebrow}</div>
+        <h1 className="hero-date">
+          {today.getDate()} {t.dates.months[today.getMonth()]}
+          <span style={{ color: 'var(--ink-faint)' }}> {today.getFullYear()}</span>
+        </h1>
       </header>
 
       <TodayFocus />
@@ -139,223 +121,85 @@ export default function IndexPage() {
         </Link>
       )}
 
-      {(() => {
-        const weeklyLog = data.logs.find((l) => l.key === 'weekly');
-        const otherLogs = data.logs.filter((l) => l.key !== 'weekly');
-        const weeklyMeta = LOG_META.weekly;
-        const weeklyPct = weeklyLog?.total ? Math.round((weeklyLog.done / weeklyLog.total) * 100) : 0;
-        const weeklyPreview = weeklyLog ? previewFor('weekly', data) : undefined;
-
-        return (
-          <>
-            {weeklyLog && (
-              <Link
-                href={weeklyPreview ? entryHref(weeklyPreview) : weeklyMeta.href}
-                className="log-card-featured"
-                style={{ marginBottom: 18 }}
-              >
-                <div className="log-card-featured-glyph">
-                  <weeklyMeta.Icon size={26} strokeWidth={1.6} />
-                </div>
-                <div className="log-card-featured-body">
-                  <div className="log-card-featured-eyebrow">{t.index.weeklyFeaturedEyebrow}</div>
-                  <div className="log-card-featured-name">{weeklyMeta.label}</div>
-                  <div className="log-card-featured-sub">{formatRange(data.weekStart, data.weekEnd, t.dates.months)}</div>
-                  {weeklyPreview && (
-                    <div className="log-card-featured-preview" title={weeklyPreview.content}>
-                      “{weeklyPreview.content}”
-                    </div>
-                  )}
-                </div>
-                <div className="log-card-featured-stats">
-                  <div className="log-card-featured-pct">{weeklyPct}%</div>
-                  <div className="bar" style={{ width: 84 }}>
-                    <span style={{ width: `${weeklyPct}%` }} />
-                  </div>
-                  <div className="muted" style={{ fontSize: 11.5 }}>
-                    {weeklyLog.done}/{weeklyLog.total} {t.common.done}
-                  </div>
-                </div>
-                <span className="log-card-featured-cta">{t.index.weeklyFeaturedCta} →</span>
-              </Link>
+      {weeklyLog && (
+        <Link href={weeklyPreview ? entryHref(weeklyPreview) : weeklyMeta.href} className="log-card-featured">
+          <div className="log-card-featured-glyph">
+            <weeklyMeta.Icon size={26} strokeWidth={1.6} />
+          </div>
+          <div className="log-card-featured-body">
+            <div className="log-card-featured-eyebrow">{t.index.weeklyFeaturedEyebrow}</div>
+            <div className="log-card-featured-name">{weeklyMeta.label}</div>
+            <div className="log-card-featured-sub">{formatRange(data.weekStart, data.weekEnd, t.dates.months)}</div>
+            {weeklyPreview && (
+              <div className="log-card-featured-preview" title={weeklyPreview.content}>
+                “{weeklyPreview.content}”
+              </div>
             )}
-
-            <section className="grid grid-2" style={{ marginBottom: 26 }}>
-              {otherLogs.map((log) => {
-                const meta = LOG_META[log.key];
-                const pct = log.total ? Math.round((log.done / log.total) * 100) : 0;
-                const preview = previewFor(log.key, data);
-                return (
-                  <Link key={log.key} href={preview ? entryHref(preview) : meta.href} className="log-card log-card-compact">
-                    <div className="log-card-top">
-                      <div className="log-glyph log-glyph-sm">
-                        <meta.Icon size={16} strokeWidth={1.8} />
-                      </div>
-                      <span className="pill">
-                        {log.open} {t.common.open}
-                      </span>
-                    </div>
-                    <div>
-                      <div className="log-name">{meta.label}</div>
-                      <div className="muted" style={{ fontSize: 12.5, marginTop: 2 }}>
-                        {log.key === 'monthly' ? formatMonth(data.month, t.dates.months) : meta.blurb}
-                      </div>
-                      {preview && (
-                        <div className="log-card-preview" title={preview.content}>
-                          “{preview.content}”
-                        </div>
-                      )}
-                    </div>
-                    <div className="bar">
-                      <span style={{ width: `${pct}%` }} />
-                    </div>
-                    <div className="stat-row">
-                      <span>
-                        <b>{log.total}</b> {t.common.entries}
-                      </span>
-                      <span>
-                        <b>{log.done}</b> {t.common.done}
-                      </span>
-                    </div>
-                  </Link>
-                );
-              })}
-            </section>
-          </>
-        );
-      })()}
-
-      <div className="grid grid-2">
-        <section className="card">
-          <div className="card-head">
-            <h2 className="card-title">{t.index.collectionsTitle}</h2>
-            <Link href="/collections" className="btn btn-sm btn-ghost">
-              {t.index.manage}
-            </Link>
           </div>
-          {data.collections.length === 0 ? (
-            <div className="empty">{t.index.noCollectionsYet}</div>
-          ) : (
-            <div>
-              {data.collections.map((col) => (
-                <Link key={col.id} href={`/collections/${col.id}`} className="index-line">
-                  <span className="index-icon">
-                    <CollectionIcon icon={col.icon} size={14} />
-                  </span>
-                  <span>{col.title}</span>
-                  <span className="index-dots" />
-                  {col.pinned && <span className="pill">{t.common.pinned}</span>}
-                </Link>
-              ))}
+          <div className="log-card-featured-stats">
+            <div className="log-card-featured-pct">{weeklyPct}%</div>
+            <div className="bar" style={{ width: 84 }}>
+              <span style={{ width: `${weeklyPct}%` }} />
             </div>
-          )}
-        </section>
-
-        <section className="card">
-          <div className="card-head">
-            <h2 className="card-title">{t.index.monthsAheadTitle}</h2>
-            <Link href="/future" className="btn btn-sm btn-ghost">
-              {t.index.futureLogLink}
-            </Link>
+            <div className="muted" style={{ fontSize: 11.5 }}>
+              {weeklyLog.done}/{weeklyLog.total} {t.common.done}
+            </div>
           </div>
+          <span className="log-card-featured-cta">{t.index.weeklyFeaturedCta} →</span>
+        </Link>
+      )}
+
+      {/* Monthly/Future are used far less than the daily log, so they're a
+          slim link row rather than full-size cards competing for attention. */}
+      <div className="mini-log-row">
+        {otherLogs.map((log) => {
+          const meta = LOG_META[log.key];
+          return (
+            <Link key={log.key} href={meta.href} className="mini-log-link">
+              <meta.Icon size={15} strokeWidth={1.8} />
+              <span>{meta.label}</span>
+              {log.open > 0 && <span className="pill">{log.open}</span>}
+            </Link>
+          );
+        })}
+      </div>
+
+      <section className="card" style={{ marginTop: 20 }}>
+        <div className="card-head">
+          <h2 className="card-title">{t.index.collectionsTitle}</h2>
+          <Link href="/collections" className="btn btn-sm btn-ghost">
+            {t.index.manage}
+          </Link>
+        </div>
+        {data.collections.length === 0 ? (
+          <div className="empty">{t.index.noCollectionsYet}</div>
+        ) : (
           <div>
-            {data.futureMonths.map((m) => (
-              <Link key={m.month} href={`/future?month=${m.month}`} className="index-line">
-                <span className="index-icon" style={{ fontSize: 11, letterSpacing: '0.04em' }}>
-                  {formatMonthShort(m.month, t.dates.months)}
+            {data.collections.map((col) => (
+              <Link key={col.id} href={`/collections/${col.id}`} className="index-line">
+                <span className="index-icon">
+                  <CollectionIcon icon={col.icon} size={14} />
                 </span>
-                <span>{formatMonth(m.month, t.dates.months)}</span>
+                <span>{col.title}</span>
                 <span className="index-dots" />
-                <span className="pill">{m.total === 0 ? t.common.empty : `${m.open} ${t.common.open}`}</span>
+                {col.pinned && <span className="pill">{t.common.pinned}</span>}
               </Link>
             ))}
           </div>
-        </section>
-      </div>
-
-      {/* Two separate feeds, not one mixed one: a collection isn't scoped to
-          a month at all (it's an evergreen list), so folding its activity
-          into "this month" alongside the actually month-scoped logs made a
-          collection edit from three months ago look like it belonged here,
-          and hid which kind of thing a given row even was. */}
-      {monthlyLogRecent.length > 0 && (
-        <section className="card" style={{ marginTop: 18 }}>
-          <div className="card-head">
-            <h2 className="card-title">{t.index.monthlyActivityTitle}</h2>
-            <span className="muted recent-activity-hint" style={{ fontSize: 12 }}>
-              {t.index.recentActivityHint}
-            </span>
-          </div>
-          <RecentActivityList entries={monthlyLogRecent} href={entryHref} meta={recentMeta} />
-        </section>
-      )}
-
-      {collectionRecent.length > 0 && (
-        <section className="card" style={{ marginTop: 18 }}>
-          <div className="card-head">
-            <h2 className="card-title">{t.index.collectionActivityTitle}</h2>
-            <span className="muted recent-activity-hint" style={{ fontSize: 12 }}>
-              {t.index.recentActivityHint}
-            </span>
-          </div>
-          <RecentActivityList entries={collectionRecent} href={entryHref} meta={recentMeta} />
-        </section>
-      )}
-
-      <section className="card card-pad" style={{ marginTop: 18 }}>
-        <div className="eyebrow" style={{ marginBottom: 12 }}>
-          {t.index.keyTitle}
-        </div>
-        <div className="legend">
-          <span>
-            <code>•</code> {t.index.legend.task}
-          </span>
-          <span>
-            <code>○</code> {t.index.legend.event}
-          </span>
-          <span>
-            <code>—</code> {t.index.legend.note}
-          </span>
-          <span>
-            <code>×</code> {t.index.legend.completed}
-          </span>
-          <span>
-            <code>&gt;</code> {t.index.legend.migrated}
-          </span>
-          <span>
-            <code>&lt;</code> {t.index.legend.scheduled}
-          </span>
-          <span>
-            <Star size={13} strokeWidth={1.8} style={{ verticalAlign: -2 }} /> {t.index.legend.priority}
-          </span>
-          <span>
-            <Sparkles size={13} strokeWidth={1.8} style={{ verticalAlign: -2 }} /> {t.index.legend.inspiration}
-          </span>
-        </div>
+        )}
       </section>
-    </div>
-  );
-}
 
-function ProgressRing({ value }: { value: number }) {
-  const r = 26;
-  const c = 2 * Math.PI * r;
-  return (
-    <svg width="64" height="64" viewBox="0 0 64 64" aria-hidden="true">
-      <circle cx="32" cy="32" r={r} fill="none" stroke="var(--paper-sunken)" strokeWidth="5" />
-      <circle
-        cx="32"
-        cy="32"
-        r={r}
-        fill="none"
-        stroke="var(--ink)"
-        strokeWidth="5"
-        strokeLinecap="round"
-        strokeDasharray={c}
-        strokeDashoffset={c - (c * value) / 100}
-        transform="rotate(-90 32 32)"
-        style={{ transition: 'stroke-dashoffset 600ms cubic-bezier(0.22,0.61,0.36,1)' }}
-      />
-    </svg>
+      {data.recent.length > 0 && (
+        <section className="card" style={{ marginTop: 18 }}>
+          <div className="card-head">
+            <h2 className="card-title">{t.index.recentActivityTitle}</h2>
+            <span className="muted recent-activity-hint" style={{ fontSize: 12 }}>
+              {t.index.recentActivityHint}
+            </span>
+          </div>
+          <RecentActivityList entries={data.recent} href={entryHref} meta={recentMeta} />
+        </section>
+      )}
+    </div>
   );
 }

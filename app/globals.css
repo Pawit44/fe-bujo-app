@@ -1108,6 +1108,43 @@ ol {
   margin-bottom: 34px;
 }
 
+/* The Index page's trimmed-down header: just the date, no all-time ring —
+   that stat lives on Today's Focus now, right below, so this stays a quick
+   "here's when you are" instead of repeating a number. */
+.hero-compact {
+  margin-bottom: 18px;
+}
+
+.mini-log-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.mini-log-link {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  color: var(--ink-soft);
+  font-size: 13px;
+  transition: background var(--fast), border-color var(--fast), color var(--fast);
+}
+
+.mini-log-link:hover {
+  background: var(--paper-hover);
+  color: var(--ink);
+  border-color: var(--line-strong);
+}
+
+.mini-log-link .pill {
+  margin-left: 2px;
+}
+
 /* --------------------------------------------------------------------------
    Today's focus — the Index page's headline card: what today asks of you,
    right where the day starts, not three clicks into the Weekly log.
@@ -1670,20 +1707,15 @@ ol {
   font-size: 17px;
 }
 
-.log-glyph-sm {
-  width: 32px;
-  height: 32px;
-  border-radius: 10px;
-}
-
 /* Weekly is the app's headline feature — this card is the largest, most
    colourful thing on the Index page below Today's Focus, so a first-time
-   reader's eye lands here before the smaller Monthly/Future cards. */
+   reader's eye lands here before the Monthly/Future link row. */
 .log-card-featured {
   display: flex;
   align-items: center;
   gap: 18px;
   padding: 22px 24px;
+  margin-top: 20px;
   background: linear-gradient(120deg, var(--accent) 0%, color-mix(in srgb, var(--accent) 74%, black) 100%);
   color: var(--paper);
   border-radius: var(--radius-xl);
@@ -1770,15 +1802,6 @@ ol {
   font-size: 13px;
   font-weight: 650;
   white-space: nowrap;
-}
-
-.log-card-compact {
-  padding: 16px 18px;
-  gap: 10px;
-}
-
-.log-card-compact .log-name {
-  font-size: 17px;
 }
 
 @media (max-width: 640px) {
