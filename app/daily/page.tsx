@@ -5,8 +5,8 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { CalendarClock, ListTodo } from 'lucide-react';
 import DatePicker from '@/components/DatePicker';
+import DayTimeline from '@/components/DayTimeline';
 import EntryList from '@/components/EntryList';
-import WeekTimeline from '@/components/WeekTimeline';
 import ErrorToast from '@/components/ErrorToast';
 import {
   addDays,
@@ -46,11 +46,13 @@ function DailyLog() {
   const { t } = useI18n();
   const dateParam = useSearchParams().get('date');
   const [selected, setSelected] = useState(() => initialDate(dateParam));
-  const [view, setView] = useState<'list' | 'timeline'>('list');
+  // Timeline first — it's what "open the daily log" means for most people:
+  // the day laid out hour by hour. List stays one tap away for reviewing by
+  // type (tasks/notes/ideas) or status, which the timeline doesn't filter.
+  const [view, setView] = useState<'list' | 'timeline'>('timeline');
   const collections = useCollections();
 
   const day = useEntries({ logKind: 'weekly', date: selected });
-  const byDay = useMemo(() => ({ [selected]: day.entries }), [selected, day.entries]);
 
   const open = day.entries.filter((e) => e.status === 'open').length;
   const done = day.entries.filter((e) => e.status === 'done').length;
@@ -77,21 +79,21 @@ function DailyLog() {
           <div className="view-toggle" role="group" aria-label="View">
             <button
               type="button"
-              className={view === 'list' ? 'on' : ''}
-              onClick={() => setView('list')}
-              title={t.weekly.viewList}
-            >
-              <ListTodo size={14} strokeWidth={1.8} />
-              <span>{t.weekly.viewList}</span>
-            </button>
-            <button
-              type="button"
               className={view === 'timeline' ? 'on' : ''}
               onClick={() => setView('timeline')}
               title={t.weekly.viewTimeline}
             >
               <CalendarClock size={14} strokeWidth={1.8} />
               <span>{t.weekly.viewTimeline}</span>
+            </button>
+            <button
+              type="button"
+              className={view === 'list' ? 'on' : ''}
+              onClick={() => setView('list')}
+              title={t.weekly.viewList}
+            >
+              <ListTodo size={14} strokeWidth={1.8} />
+              <span>{t.weekly.viewList}</span>
             </button>
           </div>
           <button
@@ -127,9 +129,9 @@ function DailyLog() {
       </div>
 
       {day.loading ? (
-        <div className="skeleton" style={{ height: 220 }} />
+        <div className="skeleton" style={{ height: 420 }} />
       ) : view === 'timeline' ? (
-        <WeekTimeline days={[selected]} byDay={byDay} onAdd={day.add} onUpdate={day.update} onDelete={day.remove} />
+        <DayTimeline date={selected} entries={day.entries} onAdd={day.add} onUpdate={day.update} onDelete={day.remove} />
       ) : (
         <section className="card">
           <div style={{ padding: '10px 12px 16px' }}>

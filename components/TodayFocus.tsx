@@ -4,6 +4,7 @@ import { useMemo } from 'react';
 import Link from 'next/link';
 import { ArrowRight, PartyPopper, Star } from 'lucide-react';
 import Bullet from './Bullet';
+import QuickAdd from './QuickAdd';
 import { useI18n } from '@/lib/i18n';
 import { useEntries } from '@/lib/useEntries';
 import { todayISO } from '@/lib/date';
@@ -117,8 +118,18 @@ export default function TodayFocus() {
         </div>
       )}
 
+      <div className="today-focus-add">
+        <QuickAdd
+          placeholder={t.entryTabs.addTask}
+          fixedType="task"
+          onAdd={({ content, type, priority, inspiration }) =>
+            day.add({ logKind: 'weekly', date: today, content, type, priority, inspiration })
+          }
+        />
+      </div>
+
       <Link href="/daily" className="today-focus-link">
-        {total === 0 ? t.todayFocus.goAddCta : t.todayFocus.goToDailyLogCta}
+        {t.todayFocus.goToDailyLogCta}
         <ArrowRight size={14} strokeWidth={2} />
       </Link>
     </section>

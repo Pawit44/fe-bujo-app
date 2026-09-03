@@ -118,16 +118,9 @@ const th: Dictionary = {
     recentActivityTitle: 'กิจกรรมล่าสุด',
     recentActivityHint: 'แตะรายการเพื่อไปที่หน้าที่มันอยู่โดยตรง',
     couldNotReach: 'ไม่สามารถเชื่อมต่อ API ของบันทึกได้',
-    weeklyFeaturedEyebrow: 'สัปดาห์นี้ของคุณ',
-    weeklyFeaturedCta: 'เปิดดู',
     reviewBanner: (n) => `มี ${n} รายการที่ควรทบทวนอีกครั้ง`,
     reviewBannerBlurb: 'งานจากวันและเดือนที่ผ่านไปแล้ว — ทำเครื่องหมายว่าเสร็จ ย้ายไปข้างหน้า หรือปล่อยผ่าน',
     reviewBannerCta: 'ทบทวนตอนนี้',
-    blurbs: {
-      future: 'ทุกอย่างที่กำหนดไว้เกินเดือนนี้',
-      monthly: 'ปฏิทินและงานของเดือนนี้',
-      weekly: 'วันต่อวันในสัปดาห์ที่กำลังใช้ชีวิตอยู่',
-    },
     legend: {
       task: 'งาน',
       event: 'กิจกรรม',
@@ -224,7 +217,6 @@ const th: Dictionary = {
     percentDone: 'ของวันนี้เสร็จแล้ว',
     emptyTitle: 'วันนี้ยังไม่มีงานกำหนดไว้',
     emptySubtitle: 'ภาพรวมของวันนี้',
-    goAddCta: 'เพิ่มงานสำหรับวันนี้',
     goToDailyLogCta: 'เปิดในบันทึกประจำวัน',
     doneSectionTitle: (n: number) => `เสร็จแล้ว ${n} งาน`,
     messages: {

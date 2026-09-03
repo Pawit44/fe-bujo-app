@@ -121,16 +121,9 @@ const en = {
     recentActivityTitle: 'Recent activity',
     recentActivityHint: 'Tap any entry to jump straight to where it lives.',
     couldNotReach: 'Could not reach the journal API.',
-    weeklyFeaturedEyebrow: 'Your week',
-    weeklyFeaturedCta: 'Open',
     reviewBanner: (n: number) => `${n} ${n === 1 ? 'entry needs' : 'entries need'} a second look`,
     reviewBannerBlurb: 'Tasks from days and months that have already passed — mark them done, move them forward, or let them go.',
     reviewBannerCta: 'Review now',
-    blurbs: {
-      future: 'Everything scheduled beyond this month',
-      monthly: 'The calendar and task page for this month',
-      weekly: 'Day by day, the week you are living in',
-    },
     legend: {
       task: 'task',
       event: 'event',
@@ -227,7 +220,6 @@ const en = {
     percentDone: 'done today',
     emptyTitle: 'Nothing on the books for today',
     emptySubtitle: 'Your day at a glance',
-    goAddCta: 'Add something for today',
     goToDailyLogCta: 'Open in Daily Log',
     doneSectionTitle: (n: number) => `${n} done`,
     messages: {

@@ -1329,12 +1329,16 @@ ol {
   padding: 4px;
 }
 
+.today-focus-add {
+  margin-top: 14px;
+}
+
 .today-focus-link {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 6px;
-  margin-top: 14px;
+  margin-top: 10px;
   padding-top: 12px;
   border-top: 1px solid var(--line);
   font-size: 13px;
@@ -1740,126 +1744,6 @@ ol {
   font-size: 17px;
 }
 
-/* Weekly is the app's headline feature — this card is the largest, most
-   colourful thing on the Index page below Today's Focus, so a first-time
-   reader's eye lands here before the Monthly/Future link row. */
-.log-card-featured {
-  display: flex;
-  align-items: center;
-  gap: 18px;
-  padding: 22px 24px;
-  margin-top: 20px;
-  background: linear-gradient(120deg, var(--feature-accent) 0%, var(--feature-accent-2) 100%);
-  color: var(--feature-ink);
-  border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-md);
-  transition: transform var(--normal), box-shadow var(--normal);
-}
-
-.log-card-featured:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-lg);
-}
-
-.log-card-featured-glyph {
-  flex-shrink: 0;
-  width: 54px;
-  height: 54px;
-  border-radius: 15px;
-  background: rgba(255, 255, 255, 0.16);
-  display: grid;
-  place-items: center;
-}
-
-.log-card-featured-body {
-  flex: 1;
-  min-width: 0;
-}
-
-.log-card-featured-eyebrow {
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  color: rgba(255, 255, 255, 0.75);
-}
-
-.log-card-featured-name {
-  font-family: var(--font-serif);
-  font-size: 26px;
-  letter-spacing: -0.01em;
-  margin-top: 2px;
-}
-
-.log-card-featured-sub {
-  font-size: 12.5px;
-  color: rgba(255, 255, 255, 0.85);
-  margin-top: 1px;
-}
-
-.log-card-featured-preview {
-  margin-top: 6px;
-  font-size: 12.5px;
-  color: rgba(255, 255, 255, 0.85);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.log-card-featured-stats {
-  flex-shrink: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 5px;
-}
-
-.log-card-featured-pct {
-  font-family: var(--font-serif);
-  font-size: 20px;
-}
-
-.log-card-featured-stats .bar {
-  background: rgba(255, 255, 255, 0.25);
-}
-
-.log-card-featured-stats .bar span {
-  background: var(--feature-ink);
-}
-
-.log-card-featured-stats .muted {
-  color: rgba(255, 255, 255, 0.8) !important;
-}
-
-.log-card-featured-cta {
-  flex-shrink: 0;
-  font-size: 13px;
-  font-weight: 650;
-  white-space: nowrap;
-}
-
-@media (max-width: 640px) {
-  .log-card-featured {
-    flex-wrap: wrap;
-    padding: 20px;
-  }
-
-  .log-card-featured-stats {
-    flex-basis: 100%;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .log-card-featured-stats .bar {
-    flex: 1;
-    margin: 0 10px;
-  }
-
-  .log-card-featured-cta {
-    display: none;
-  }
-}
-
 .log-name {
   font-family: var(--font-serif);
   font-size: 21px;
@@ -2173,6 +2057,11 @@ ol {
   padding: 13px 16px 11px;
   border-bottom: 1px solid var(--line);
   border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  transition: background var(--fast);
+}
+
+.day-panel-head:hover {
+  background: var(--paper-hover);
 }
 
 .day-name {
@@ -2298,10 +2187,20 @@ ol {
 }
 
 .timeline-header-cell {
+  display: block;
   text-align: center;
   padding: 10px 4px 8px;
   background: var(--paper);
   border-radius: 12px 12px 0 0;
+  transition: background var(--fast);
+}
+
+.timeline-header-cell:hover {
+  background: var(--paper-hover);
+}
+
+.timeline-header-cell.is-today:hover {
+  background: var(--accent-soft);
 }
 
 .timeline-header-cell.is-today {
@@ -2597,6 +2496,73 @@ ol {
 
 .timeline-wrap.is-single-day .timeline-block .block-content {
   font-size: 12px;
+}
+
+/* --------------------------------------------------------------------------
+   Daily log — single full-width day (see DayTimeline.tsx)
+
+   Same leaf-level pieces as the week grid (.timeline-slot, .timeline-block,
+   .timeline-hour-line, .timeline-now-line, ...) which are all self-sized via
+   absolute positioning, not the column count — only the row wrappers differ:
+   two grid tracks (a gutter + one flexible day) instead of eight.
+   -------------------------------------------------------------------------- */
+
+.day-timeline-allrow {
+  display: grid;
+  grid-template-columns: 52px 1fr;
+  column-gap: 3px;
+  min-height: 40px;
+}
+
+.day-timeline-allcell {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 10px;
+  background: var(--paper);
+  border-radius: 12px 12px 0 0;
+}
+
+.day-timeline-body {
+  display: grid;
+  grid-template-columns: 52px 1fr;
+  column-gap: 3px;
+  position: relative;
+  max-height: 70vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  border-radius: 0 0 12px 12px;
+  scroll-behavior: smooth;
+}
+
+.day-timeline-col {
+  border-radius: 0 0 12px 12px;
+}
+
+.day-timeline .timeline-hour-label {
+  font-size: 11px;
+}
+
+.day-timeline .timeline-block {
+  padding: 6px 10px;
+  font-size: 12.5px;
+}
+
+.day-timeline .timeline-block .block-time {
+  font-size: 10.5px;
+}
+
+.day-timeline .timeline-block .block-content {
+  white-space: normal;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+}
+
+.day-timeline .allday-chip {
+  font-size: 12.5px;
+  padding: 4px 11px;
 }
 
 @media (max-width: 760px) {

@@ -1,6 +1,7 @@
 'use client';
 
 import { Suspense, useMemo, useState } from 'react';
+import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { CalendarClock, ListTodo } from 'lucide-react';
 import EntryList from '@/components/EntryList';
@@ -142,10 +143,10 @@ function WeeklyLog() {
               key={iso}
               className={`day-panel ${isToday(iso) ? 'is-today' : ''} ${isWeekend(iso) ? 'is-weekend' : ''}`}
             >
-              <div className="day-panel-head">
+              <Link href={`/daily?date=${iso}`} className="day-panel-head" title={t.todayFocus.goToDailyLogCta}>
                 <h2 className="day-name">{t.dates.days[i]}</h2>
                 <span className="day-num">{iso.slice(8)}</span>
-              </div>
+              </Link>
               <div className="day-panel-body">
                 <EntryList
                   entries={byDay[iso] ?? []}

@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
+import Link from 'next/link';
 import { Bell, ChevronLeft, ChevronRight, Plus } from 'lucide-react';
 import EventEditor, { type EventDraft } from './EventEditor';
 import { glyphFor } from './Bullet';
@@ -185,10 +186,15 @@ export default function WeekTimeline({
       <div className="timeline-header-row">
         <div className="timeline-corner" />
         {visibleDays.map((iso) => (
-          <div key={iso} className={`timeline-header-cell ${isToday(iso) ? 'is-today' : ''}`}>
+          <Link
+            key={iso}
+            href={`/daily?date=${iso}`}
+            className={`timeline-header-cell ${isToday(iso) ? 'is-today' : ''}`}
+            title={t.todayFocus.goToDailyLogCta}
+          >
             <div className="timeline-day-name">{formatDayLong(iso, t.dates.months, t.dates.days).split(' ')[0]}</div>
             <div className="timeline-day-num">{iso.slice(8)}</div>
-          </div>
+          </Link>
         ))}
       </div>
 

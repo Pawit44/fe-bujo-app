@@ -1,6 +1,7 @@
 'use client';
 
 import { Suspense, useEffect, useMemo, useState } from 'react';
+import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import EntryList from '@/components/EntryList';
 import ErrorToast from '@/components/ErrorToast';
@@ -158,8 +159,13 @@ function MonthlyLog() {
 
           <section className="card">
             <div className="card-head">
-              <h2 className="card-title">{formatDayLong(selected, t.dates.months, t.dates.days)}</h2>
-              {isToday(selected) && <span className="pill">{t.common.today.toLowerCase()}</span>}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <h2 className="card-title">{formatDayLong(selected, t.dates.months, t.dates.days)}</h2>
+                {isToday(selected) && <span className="pill">{t.common.today.toLowerCase()}</span>}
+              </div>
+              <Link href={`/daily?date=${selected}`} className="btn btn-sm btn-ghost">
+                {t.todayFocus.goToDailyLogCta}
+              </Link>
             </div>
             <div style={{ padding: '10px 12px 14px' }}>
               <EntryList

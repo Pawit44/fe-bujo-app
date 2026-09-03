@@ -2,13 +2,13 @@
 
 import Link from 'next/link';
 import { AlertTriangle, RotateCcw } from 'lucide-react';
-import { formatDayLong, formatMonth, formatRange, fromISODate } from '@/lib/date';
+import { formatDayLong, formatMonth, fromISODate } from '@/lib/date';
 import { useI18n } from '@/lib/i18n';
 import { useOverview } from '@/lib/useOverview';
 import { CollectionIcon, LOG_ICONS } from '@/components/icons';
 import RecentActivityList from '@/components/RecentActivityList';
 import TodayFocus from '@/components/TodayFocus';
-import type { Entry, IndexOverview } from '@/lib/types';
+import type { Entry } from '@/lib/types';
 
 /** Where tapping this entry on the Index page should take you — the exact
  * spot it lives, not just the log in general, so a task added three months
@@ -25,18 +25,6 @@ function entryHref(entry: Entry): string {
     case 'collection':
       return entry.collectionId ? `/collections/${entry.collectionId}` : '/collections';
   }
-}
-
-/** The most recently-touched entry that actually belongs to this log card,
- * so the card shows *which* entry its count refers to instead of a bare
- * number the reader has to click through to identify. */
-function previewFor(logKey: string, data: IndexOverview): Entry | undefined {
-  return data.recent.find((e) => {
-    if (e.logKind !== logKey) return false;
-    if (logKey === 'monthly') return e.month === data.month;
-    if (logKey === 'weekly') return e.date >= data.weekStart && e.date <= data.weekEnd;
-    return true;
-  });
 }
 
 export default function IndexPage() {
@@ -90,11 +78,6 @@ export default function IndexPage() {
   }
 
   const today = fromISODate(data.today);
-  const weeklyLog = data.logs.find((l) => l.key === 'weekly');
-  const otherLogs = data.logs.filter((l) => l.key !== 'weekly');
-  const weeklyMeta = LOG_META.weekly;
-  const weeklyPct = weeklyLog?.total ? Math.round((weeklyLog.done / weeklyLog.total) * 100) : 0;
-  const weeklyPreview = weeklyLog ? previewFor('weekly', data) : undefined;
 
   return (
     <div className="page">
@@ -121,38 +104,12 @@ export default function IndexPage() {
         </Link>
       )}
 
-      {weeklyLog && (
-        <Link href={weeklyPreview ? entryHref(weeklyPreview) : weeklyMeta.href} className="log-card-featured">
-          <div className="log-card-featured-glyph">
-            <weeklyMeta.Icon size={26} strokeWidth={1.6} />
-          </div>
-          <div className="log-card-featured-body">
-            <div className="log-card-featured-eyebrow">{t.index.weeklyFeaturedEyebrow}</div>
-            <div className="log-card-featured-name">{weeklyMeta.label}</div>
-            <div className="log-card-featured-sub">{formatRange(data.weekStart, data.weekEnd, t.dates.months)}</div>
-            {weeklyPreview && (
-              <div className="log-card-featured-preview" title={weeklyPreview.content}>
-                “{weeklyPreview.content}”
-              </div>
-            )}
-          </div>
-          <div className="log-card-featured-stats">
-            <div className="log-card-featured-pct">{weeklyPct}%</div>
-            <div className="bar" style={{ width: 84 }}>
-              <span style={{ width: `${weeklyPct}%` }} />
-            </div>
-            <div className="muted" style={{ fontSize: 11.5 }}>
-              {weeklyLog.done}/{weeklyLog.total} {t.common.done}
-            </div>
-          </div>
-          <span className="log-card-featured-cta">{t.index.weeklyFeaturedCta} →</span>
-        </Link>
-      )}
-
-      {/* Monthly/Future are used far less than the daily log, so they're a
-          slim link row rather than full-size cards competing for attention. */}
+      {/* TodayFocus above already covers "today" in full — Weekly, Monthly
+          and Future all get equal billing as a slim link row rather than
+          competing full-size cards, since a second big block here would just
+          duplicate the "here's your day" framing TodayFocus already owns. */}
       <div className="mini-log-row">
-        {otherLogs.map((log) => {
+        {data.logs.map((log) => {
           const meta = LOG_META[log.key];
           return (
             <Link key={log.key} href={meta.href} className="mini-log-link">
