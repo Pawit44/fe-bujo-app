@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Bell, Clock, Sparkles, Star, Trash2 } from 'lucide-react';
 import Bullet from './Bullet';
+import ColorMenu from './ColorMenu';
 import MigrateMenu from './MigrateMenu';
 import FolderMenu from './FolderMenu';
 import EventEditor, { type EventDraft } from './EventEditor';
@@ -177,6 +178,7 @@ export default function EntryRow({
         >
           <Sparkles size={14} strokeWidth={1.8} fill={entry.inspiration ? 'currentColor' : 'none'} />
         </button>
+        <ColorMenu entry={entry} onPick={(color) => onUpdate(entry, { color })} />
         {folders && onMoveFolder && (
           <FolderMenu
             folders={folders}

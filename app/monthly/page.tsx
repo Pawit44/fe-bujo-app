@@ -23,6 +23,11 @@ import {
 import { useCollections } from '@/lib/useCollections';
 import { useEntries } from '@/lib/useEntries';
 import { useI18n } from '@/lib/i18n';
+import type { Entry } from '@/lib/types';
+
+/** How many task tags a day cell shows before collapsing the rest into
+ * "+N more" — enough to be useful at a glance, not enough to crowd the cell. */
+const MAX_TAGS_PER_DAY = 2;
 
 const MONTH_RE = /^\d{4}-\d{2}$/;
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
@@ -76,11 +81,14 @@ function MonthlyLog() {
   const monthly = useEntries({ logKind: 'monthly', month });
   const daily = useEntries({ logKind: 'weekly', from: rangeStart, to: rangeEnd });
 
-  const countByDay = useMemo(() => {
-    const map: Record<string, number> = {};
+  // Grouped (not just counted) so each cell can show what the day's tasks
+  // actually are, not just how many — done/cancelled stay out of the tag
+  // list the same way they used to stay out of the count.
+  const entriesByDay = useMemo(() => {
+    const map: Record<string, Entry[]> = {};
     for (const e of daily.entries) {
       if (e.status === 'done' || e.status === 'cancelled') continue;
-      map[e.date] = (map[e.date] ?? 0) + 1;
+      (map[e.date] ??= []).push(e);
     }
     return map;
   }, [daily.entries]);
@@ -143,7 +151,7 @@ function MonthlyLog() {
               <div key={d}>{d.slice(0, 3)}</div>
             ))}
           </div>
-          <div className="cal-days" onMouseLeave={() => setHoverRow(null)}>
+          <div key={month} className="cal-days" onMouseLeave={() => setHoverRow(null)}>
             {cells.map((iso, i) => {
               const row = Math.floor(i / 7);
               const weekHover = mode === 'week' && hoverRow === row;
@@ -163,7 +171,9 @@ function MonthlyLog() {
                 );
               }
 
-              const n = countByDay[iso] ?? 0;
+              const dayEntries = entriesByDay[iso] ?? [];
+              const tags = dayEntries.slice(0, MAX_TAGS_PER_DAY);
+              const extra = dayEntries.length - tags.length;
               const day = Number(iso.slice(-2));
               const classes = [
                 'cal-day',
@@ -184,16 +194,21 @@ function MonthlyLog() {
                   onBlur={() => mode === 'week' && setHoverRow(null)}
                   title={
                     mode === 'day'
-                      ? `${formatDayLong(iso, t.dates.months, t.dates.days)} — ${n} ${t.common.open}`
+                      ? `${formatDayLong(iso, t.dates.months, t.dates.days)} — ${dayEntries.length} ${t.common.open}`
                       : weekRangeForRow(row)
                   }
                 >
-                  {day}
-                  <span className="cal-dots">
-                    {Array.from({ length: Math.min(n, 3) }, (_, k) => (
-                      <i key={k} />
-                    ))}
-                  </span>
+                  <span className="cal-day-num">{day}</span>
+                  {tags.length > 0 && (
+                    <span className="cal-tags">
+                      {tags.map((entry) => (
+                        <span key={entry.id} className={`cal-tag ${entry.color ? `ev-color-${entry.color}` : ''}`}>
+                          {entry.content}
+                        </span>
+                      ))}
+                      {extra > 0 && <span className="cal-tag-more">{t.common.moreCount(extra)}</span>}
+                    </span>
+                  )}
                 </Link>
               );
             })}

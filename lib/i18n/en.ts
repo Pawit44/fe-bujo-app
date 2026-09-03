@@ -33,6 +33,7 @@ const en = {
     dismiss: 'Dismiss',
     navLimit: "You can't go further than 10 years from today.",
     somethingWentWrong: 'Something went wrong. Please try again.',
+    moreCount: (n: number) => `+${n} more`,
   },
   dates: {
     months: [

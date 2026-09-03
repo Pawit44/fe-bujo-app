@@ -10,6 +10,7 @@ import WeekTimeline from '@/components/WeekTimeline';
 import ErrorToast from '@/components/ErrorToast';
 import {
   addDays,
+  formatMonth,
   formatRange,
   fromISODate,
   isDateInRange,
@@ -78,6 +79,11 @@ function WeeklyLog() {
           <p className="page-sub">
             {journal.entries.length === 0 ? t.weekly.captureAsWeekHappens : t.weekly.openDone(open, done)}
           </p>
+          <div className="week-belongs">
+            <Link href={`/monthly?month=${days[0].slice(0, 7)}`} className="pill pill-link">
+              {formatMonth(days[0].slice(0, 7), t.dates.months)}
+            </Link>
+          </div>
         </div>
 
         <div className="head-actions">
@@ -130,40 +136,44 @@ function WeeklyLog() {
             <div key={d} className="skeleton" style={{ height: 190 }} />
           ))}
         </div>
-      ) : view === 'timeline' ? (
-        <WeekTimeline
-          days={days}
-          byDay={byDay}
-          onAdd={journal.add}
-          onUpdate={journal.update}
-          onDelete={journal.remove}
-        />
       ) : (
-        <div className="week-grid">
-          {days.map((iso, i) => (
-            <section
-              key={iso}
-              className={`day-panel ${isToday(iso) ? 'is-today' : ''} ${isWeekend(iso) ? 'is-weekend' : ''}`}
-            >
-              <Link href={`/daily?date=${iso}`} className="day-panel-head" title={t.todayFocus.goToDailyLogCta}>
-                <h2 className="day-name">{t.dates.days[i]}</h2>
-                <span className="day-num">{iso.slice(8)}</span>
-              </Link>
-              <div className="day-panel-body">
-                <EntryList
-                  entries={byDay[iso] ?? []}
-                  collections={collections}
-                  context={{ logKind: 'weekly', date: iso }}
-                  onAdd={journal.add}
-                  onToggle={journal.toggle}
-                  onUpdate={journal.update}
-                  onDelete={journal.remove}
-                  onMigrate={journal.migrate}
-                  onReorder={journal.reorder}
-                />
-              </div>
-            </section>
-          ))}
+        <div key={anchor} className="week-view-fade">
+          {view === 'timeline' ? (
+            <WeekTimeline
+              days={days}
+              byDay={byDay}
+              onAdd={journal.add}
+              onUpdate={journal.update}
+              onDelete={journal.remove}
+            />
+          ) : (
+            <div className="week-grid">
+              {days.map((iso, i) => (
+                <section
+                  key={iso}
+                  className={`day-panel ${isToday(iso) ? 'is-today' : ''} ${isWeekend(iso) ? 'is-weekend' : ''}`}
+                >
+                  <Link href={`/daily?date=${iso}`} className="day-panel-head" title={t.todayFocus.goToDailyLogCta}>
+                    <h2 className="day-name">{t.dates.days[i]}</h2>
+                    <span className="day-num">{iso.slice(8)}</span>
+                  </Link>
+                  <div className="day-panel-body">
+                    <EntryList
+                      entries={byDay[iso] ?? []}
+                      collections={collections}
+                      context={{ logKind: 'weekly', date: iso }}
+                      onAdd={journal.add}
+                      onToggle={journal.toggle}
+                      onUpdate={journal.update}
+                      onDelete={journal.remove}
+                      onMigrate={journal.migrate}
+                      onReorder={journal.reorder}
+                    />
+                  </div>
+                </section>
+              ))}
+            </div>
+          )}
         </div>
       )}
       <ErrorToast message={journal.error} onDismiss={() => journal.setError(null)} />
