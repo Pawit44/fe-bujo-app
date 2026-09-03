@@ -4,6 +4,7 @@ import { Suspense, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { CalendarClock, ListTodo } from 'lucide-react';
+import DatePicker from '@/components/DatePicker';
 import EntryList from '@/components/EntryList';
 import WeekTimeline from '@/components/WeekTimeline';
 import ErrorToast from '@/components/ErrorToast';
@@ -108,6 +109,7 @@ function WeeklyLog() {
           >
             ‹
           </button>
+          <DatePicker value={anchor} onSelect={(iso) => setAnchor(toISODate(startOfWeek(fromISODate(iso))))} />
           <button className="btn btn-sm" onClick={() => setAnchor(toISODate(startOfWeek(new Date())))}>
             {t.weekly.thisWeek}
           </button>

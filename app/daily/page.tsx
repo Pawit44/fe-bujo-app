@@ -4,7 +4,6 @@ import { Suspense, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { CalendarClock, ListTodo } from 'lucide-react';
-import DatePicker from '@/components/DatePicker';
 import DayTimeline from '@/components/DayTimeline';
 import EntryList from '@/components/EntryList';
 import ErrorToast from '@/components/ErrorToast';
@@ -104,7 +103,6 @@ function DailyLog() {
           >
             ‹
           </button>
-          <DatePicker value={selected} onSelect={setSelected} />
           <button className="btn btn-sm" onClick={() => setSelected(todayISO())}>
             {t.common.today}
           </button>
