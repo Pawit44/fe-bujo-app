@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next';
-import { Baloo_2, Inter, Kanit, Noto_Sans_Thai } from 'next/font/google';
+import { Inter, Kanit, Newsreader, Noto_Sans_Thai } from 'next/font/google';
 import Providers from '@/components/Providers';
 import AppShell from '@/components/AppShell';
 import { THEME_STORAGE_KEY, DEFAULT_THEME } from '@/lib/theme';
@@ -37,7 +37,7 @@ export const metadata: Metadata = {
 // `metadata` — this is what tints the OS status bar / task switcher to match
 // the icon's background instead of leaving it default white or black.
 export const viewport: Viewport = {
-  themeColor: '#2b2420',
+  themeColor: '#1b1b19',
 };
 
 /*
@@ -61,10 +61,9 @@ const inter = Inter({
   preload: false,
 });
 
-const baloo2 = Baloo_2({
+const newsreader = Newsreader({
   subsets: ['latin'],
-  weight: ['600', '700', '800'],
-  variable: '--font-baloo',
+  variable: '--font-newsreader',
   display: 'swap',
   preload: false,
 });
@@ -77,12 +76,12 @@ const notoSansThai = Noto_Sans_Thai({
 
 const kanit = Kanit({
   subsets: ['thai'],
-  weight: ['300', '400', '500', '600', '700'],
+  weight: ['300', '400', '500', '600'],
   variable: '--font-kanit',
   display: 'swap',
 });
 
-const fontVariables = [inter, baloo2, notoSansThai, kanit].map((f) => f.variable).join(' ');
+const fontVariables = [inter, newsreader, notoSansThai, kanit].map((f) => f.variable).join(' ');
 
 // Applies the saved theme/locale before first paint, so there is no flash
 // of the default theme or language while React hydrates.

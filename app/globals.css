@@ -1,37 +1,36 @@
 /* ==========================================================================
    BUJO — design tokens
-   Warm editorial system: ink on cream, terracotta as the one primary
-   accent (mustard/teal as its secondary pair for priority/inspiration),
+   A quiet paper-white system: ink on paper, one restrained accent,
    soft shadows instead of hard borders.
    ========================================================================== */
 
 :root,
 [data-theme='paper'] {
-  /* Paper — warm cream, not stark white */
-  --paper: #fbf5ec;
-  --paper-soft: #f7eedf;
-  --paper-sunken: #f1e4ce;
-  --paper-hover: #ecddc5;
+  /* Paper */
+  --paper: #ffffff;
+  --paper-soft: #fbfbfa;
+  --paper-sunken: #f6f6f4;
+  --paper-hover: #f2f2f0;
 
-  /* Ink — warm near-black, not cool gray-black */
-  --ink: #2b2420;
-  --ink-soft: #5c4f44;
-  --ink-muted: #8f8074;
-  --ink-faint: #c6b8a8;
+  /* Ink */
+  --ink: #1b1b19;
+  --ink-soft: #4a4a45;
+  --ink-muted: #8a8a82;
+  --ink-faint: #b6b6ae;
   /* One step further from the paper than --ink, for the hover state of
      surfaces that are already painted in --ink. Each theme pushes it in its
      own direction: darker on a light theme, lighter on a dark one. */
   --ink-strong: #000000;
 
   /* Lines */
-  --line: #e9dbc3;
-  --line-strong: #dac5a2;
-  --dot: #e3d3b8;
+  --line: #ececE7;
+  --line-strong: #dededa;
+  --dot: #e6e6e0;
 
-  /* Accent — terracotta, the brand's primary color */
-  --accent: #c1552f;
-  --accent-soft: #f4e1d2;
-  --accent-line: #e3b594;
+  /* Accent — a muted ink-blue that stays calm on white */
+  --accent: #3f5b8b;
+  --accent-soft: #eef2f8;
+  --accent-line: #ccd7e8;
 
   /* A solid gradient fill for "featured" surfaces (the primary nav item,
      the Daily Log hero card) plus the text color guaranteed to read on it.
@@ -39,142 +38,132 @@
      in the dark theme (accent goes light so it reads as *text* on a dark
      page), which would leave a light-on-light gradient here. This pair
      always stays "dark fill, white text" no matter which theme is active. */
-  --feature-accent: #c1552f;
-  --feature-accent-2: #953f20;
+  --feature-accent: #3f5b8b;
+  --feature-accent-2: #2c4066;
   --feature-ink: #ffffff;
 
-  /* Semantic — mustard for priority, teal for inspiration: the accent's
-     terracotta plus these two is the brand's whole warm triad, so which
-     marker a task carries is legible by color alone, not just its icon. */
-  --done: #6b8f5c;
-  --priority: #b8862e;
-  --inspiration: #3f8483;
+  /* Semantic */
+  --done: #6f8f6a;
+  --priority: #b4735a;
+  --inspiration: #b39449;
 
   /* Danger — solid fill for destructive buttons, plus a tinted pair for
-     inline error messages. Kept a cooler, more saturated red than the
-     terracotta accent so a delete action never reads as "just another
-     brand-colored button." */
-  --danger: #b23b30;
-  --danger-hover: #9a3128;
+     inline error messages. */
+  --danger: #b3524a;
+  --danger-hover: #9c453e;
   --danger-ink: #ffffff;
-  --danger-soft: #f7e4e0;
-  --danger-soft-ink: #8f2e24;
+  --danger-soft: #fbeceb;
+  --danger-soft-ink: #a13f37;
 
-  /* Timeline/tag colors — one hue per palette token. -solid tints a block's
-     left edge/dot (and a day-cell tag pill's background), -soft is its
-     fill, -line its border. Warmed to sit on cream instead of white. */
-  --ev-red-solid: hsl(9 62% 45%);      --ev-red-soft: hsl(9 60% 91%);      --ev-red-line: hsl(9 55% 79%);
-  --ev-orange-solid: hsl(28 70% 44%);  --ev-orange-soft: hsl(30 75% 89%);  --ev-orange-line: hsl(28 65% 77%);
-  --ev-yellow-solid: hsl(42 68% 40%);  --ev-yellow-soft: hsl(44 78% 87%);  --ev-yellow-line: hsl(43 68% 75%);
-  --ev-green-solid: hsl(140 35% 35%);  --ev-green-soft: hsl(140 40% 89%);  --ev-green-line: hsl(140 35% 75%);
-  --ev-teal-solid: hsl(178 42% 31%);   --ev-teal-soft: hsl(178 42% 88%);   --ev-teal-line: hsl(178 38% 73%);
-  --ev-blue-solid: hsl(212 45% 45%);   --ev-blue-soft: hsl(212 55% 91%);   --ev-blue-line: hsl(212 45% 79%);
-  --ev-purple-solid: hsl(262 38% 47%); --ev-purple-soft: hsl(262 48% 91%); --ev-purple-line: hsl(262 38% 81%);
-  --ev-pink-solid: hsl(340 55% 49%);   --ev-pink-soft: hsl(340 60% 91%);   --ev-pink-line: hsl(340 50% 81%);
-  --ev-gray-solid: hsl(30 8% 40%);     --ev-gray-soft: hsl(30 15% 89%);    --ev-gray-line: hsl(30 10% 77%);
+  /* Timeline event colors — one hue per palette token. -solid tints a
+     block's left edge/dot, -soft is its fill, -line its border. */
+  --ev-red-solid: hsl(355 55% 44%);   --ev-red-soft: hsl(355 65% 92%);   --ev-red-line: hsl(355 55% 80%);
+  --ev-orange-solid: hsl(28 65% 42%); --ev-orange-soft: hsl(28 75% 90%); --ev-orange-line: hsl(28 65% 78%);
+  --ev-yellow-solid: hsl(42 65% 38%);  --ev-yellow-soft: hsl(45 80% 88%); --ev-yellow-line: hsl(45 70% 76%);
+  --ev-green-solid: hsl(145 40% 34%); --ev-green-soft: hsl(145 45% 90%); --ev-green-line: hsl(145 40% 76%);
+  --ev-teal-solid: hsl(178 45% 30%);  --ev-teal-soft: hsl(178 45% 89%);  --ev-teal-line: hsl(178 40% 74%);
+  --ev-blue-solid: hsl(215 50% 44%);  --ev-blue-soft: hsl(215 60% 92%);  --ev-blue-line: hsl(215 50% 80%);
+  --ev-purple-solid: hsl(265 40% 46%); --ev-purple-soft: hsl(265 50% 92%); --ev-purple-line: hsl(265 40% 82%);
+  --ev-pink-solid: hsl(330 50% 46%);  --ev-pink-soft: hsl(330 60% 92%);  --ev-pink-line: hsl(330 50% 82%);
+  --ev-gray-solid: hsl(0 0% 38%);     --ev-gray-soft: hsl(0 0% 90%);     --ev-gray-line: hsl(0 0% 78%);
 }
 
-/* Dusk — a dark, low-glare theme for the same layout. Warm dark brown, not
-   cool blue-black, so the terracotta accent still reads as "the same brand." */
+/* Dusk — a dark, low-glare theme for the same layout. */
 [data-theme='dusk'] {
-  --paper: #221d19;
-  --paper-soft: #271f1b;
-  --paper-sunken: #2e251f;
-  --paper-hover: #362b23;
+  --paper: #1c1d20;
+  --paper-soft: #202226;
+  --paper-sunken: #26282d;
+  --paper-hover: #2c2e34;
 
-  --ink: #f1e6d8;
-  --ink-soft: #cbb9a5;
-  --ink-muted: #99887a;
-  --ink-faint: #5e4f42;
+  --ink: #eeeeec;
+  --ink-soft: #c6c6c2;
+  --ink-muted: #92928d;
+  --ink-faint: #616159;
   /* Brighter than --ink, not darker: on this theme --ink is the light
      colour, so a primary button hovers *towards* white. Reusing the light
      theme's #000 here painted black text on a black fill. */
   --ink-strong: #ffffff;
 
-  --line: #3a2e26;
-  --line-strong: #47382e;
-  --dot: #362b23;
+  --line: #313338;
+  --line-strong: #3c3e44;
+  --dot: #2c2e34;
 
-  --accent: #e08a5c;
-  --accent-soft: #3a2a20;
-  --accent-line: #5c4331;
+  --accent: #8aa6d9;
+  --accent-soft: #26313f;
+  --accent-line: #3a4a63;
 
   /* --accent itself is deliberately light here (it doubles as readable text
      on this theme's dark paper) — too light for white text to sit on, so
-     the featured-surface fill gets its own, deeper terracotta instead. */
-  --feature-accent: #b85a34;
-  --feature-accent-2: #7a3b1e;
+     the featured-surface fill gets its own, deeper blue instead of reusing it. */
+  --feature-accent: #3a5488;
+  --feature-accent-2: #263a5e;
   --feature-ink: #ffffff;
 
-  --done: #93b587;
-  --priority: #d9a857;
-  --inspiration: #5fadab;
+  --done: #8fb388;
+  --priority: #d38f70;
+  --inspiration: #d4b566;
 
-  --danger: #d0776a;
-  --danger-hover: #dc8a7e;
-  --danger-ink: #221d19;
-  --danger-soft: #3d2621;
-  --danger-soft-ink: #f0b6aa;
+  --danger: #c96a60;
+  --danger-hover: #d97d72;
+  --danger-ink: #1c1d20;
+  --danger-soft: #3a2523;
+  --danger-soft-ink: #f0b3ab;
 
-  --ev-red-solid: hsl(9 70% 66%);      --ev-red-soft: hsl(9 45% 21%);      --ev-red-line: hsl(9 40% 33%);
-  --ev-orange-solid: hsl(30 75% 62%);  --ev-orange-soft: hsl(30 45% 20%);  --ev-orange-line: hsl(30 45% 32%);
-  --ev-yellow-solid: hsl(43 72% 62%);  --ev-yellow-soft: hsl(43 45% 19%);  --ev-yellow-line: hsl(43 45% 31%);
-  --ev-green-solid: hsl(140 42% 58%);  --ev-green-soft: hsl(140 30% 18%);  --ev-green-line: hsl(140 30% 30%);
-  --ev-teal-solid: hsl(178 48% 55%);   --ev-teal-soft: hsl(178 35% 17%);   --ev-teal-line: hsl(178 35% 29%);
-  --ev-blue-solid: hsl(212 65% 70%);   --ev-blue-soft: hsl(212 40% 21%);   --ev-blue-line: hsl(212 40% 33%);
-  --ev-purple-solid: hsl(262 52% 72%); --ev-purple-soft: hsl(262 35% 22%); --ev-purple-line: hsl(262 35% 34%);
-  --ev-pink-solid: hsl(340 58% 70%);   --ev-pink-soft: hsl(340 35% 22%);   --ev-pink-line: hsl(340 35% 34%);
-  --ev-gray-solid: hsl(30 8% 65%);     --ev-gray-soft: hsl(30 12% 23%);    --ev-gray-line: hsl(30 10% 33%);
+  --ev-red-solid: hsl(355 70% 68%);    --ev-red-soft: hsl(355 40% 22%);    --ev-red-line: hsl(355 40% 34%);
+  --ev-orange-solid: hsl(28 75% 62%);  --ev-orange-soft: hsl(28 45% 20%);  --ev-orange-line: hsl(28 45% 32%);
+  --ev-yellow-solid: hsl(45 75% 62%);  --ev-yellow-soft: hsl(45 45% 18%);  --ev-yellow-line: hsl(45 45% 30%);
+  --ev-green-solid: hsl(145 45% 60%);  --ev-green-soft: hsl(145 30% 18%);  --ev-green-line: hsl(145 30% 30%);
+  --ev-teal-solid: hsl(178 50% 55%);   --ev-teal-soft: hsl(178 35% 17%);   --ev-teal-line: hsl(178 35% 29%);
+  --ev-blue-solid: hsl(215 70% 72%);   --ev-blue-soft: hsl(215 40% 21%);   --ev-blue-line: hsl(215 40% 33%);
+  --ev-purple-solid: hsl(265 55% 74%); --ev-purple-soft: hsl(265 35% 22%); --ev-purple-line: hsl(265 35% 34%);
+  --ev-pink-solid: hsl(330 60% 72%);   --ev-pink-soft: hsl(330 35% 22%);   --ev-pink-line: hsl(330 35% 34%);
+  --ev-gray-solid: hsl(0 0% 68%);      --ev-gray-soft: hsl(0 0% 24%);      --ev-gray-line: hsl(0 0% 34%);
 }
 
-/* Sage — keeps its own green accent (that's the reason to pick it over
-   Paper) but shares the same warm-cream neutrals and mustard priority as
-   the other two themes, so switching themes never jolts between a cool-
-   white and a warm-cream base. Its "inspiration" secondary is terracotta
-   instead of teal — teal would fight the green accent here. */
+/* Sage — the same paper-white feel, with a green accent instead of blue. */
 [data-theme='sage'] {
-  --paper: #faf6ec;
-  --paper-soft: #f5efe0;
-  --paper-sunken: #efe7d1;
-  --paper-hover: #e8dfc3;
+  --paper: #ffffff;
+  --paper-soft: #fafbf8;
+  --paper-sunken: #f4f6f1;
+  --paper-hover: #eef1ea;
 
-  --ink: #232720;
-  --ink-soft: #4f5546;
-  --ink-muted: #838a76;
-  --ink-faint: #bac0a8;
+  --ink: #1c1f19;
+  --ink-soft: #494e44;
+  --ink-muted: #868c7c;
+  --ink-faint: #b4b9a9;
   --ink-strong: #000000;
 
-  --line: #e3e4ce;
-  --line-strong: #d3d6b8;
-  --dot: #dee2c4;
+  --line: #e8ece2;
+  --line-strong: #dbe0d1;
+  --dot: #e2e7d8;
 
   --accent: #4c7a53;
-  --accent-soft: #e7f0e1;
-  --accent-line: #bbd4b8;
+  --accent-soft: #ecf3ea;
+  --accent-line: #c9dcc9;
 
   --feature-accent: #4c7a53;
-  --feature-accent-2: #335938;
+  --feature-accent-2: #345638;
   --feature-ink: #ffffff;
 
-  --done: #6b8f5c;
-  --priority: #b8862e;
-  --inspiration: #c1552f;
+  --done: #6f8f6a;
+  --priority: #b4735a;
+  --inspiration: #a98f3f;
 
-  --danger: #b23b30;
-  --danger-hover: #9a3128;
+  --danger: #b3524a;
+  --danger-hover: #9c453e;
   --danger-ink: #ffffff;
-  --danger-soft: #f7e4e0;
-  --danger-soft-ink: #8f2e24;
+  --danger-soft: #fbeceb;
+  --danger-soft-ink: #a13f37;
 
-  --ev-red-solid: hsl(9 62% 45%);      --ev-red-soft: hsl(9 60% 91%);      --ev-red-line: hsl(9 55% 79%);
-  --ev-orange-solid: hsl(28 70% 44%);  --ev-orange-soft: hsl(30 75% 89%);  --ev-orange-line: hsl(28 65% 77%);
-  --ev-yellow-solid: hsl(42 68% 40%);  --ev-yellow-soft: hsl(44 78% 87%);  --ev-yellow-line: hsl(43 68% 75%);
-  --ev-green-solid: hsl(140 35% 35%);  --ev-green-soft: hsl(140 40% 89%);  --ev-green-line: hsl(140 35% 75%);
-  --ev-teal-solid: hsl(178 42% 31%);   --ev-teal-soft: hsl(178 42% 88%);   --ev-teal-line: hsl(178 38% 73%);
-  --ev-blue-solid: hsl(212 45% 45%);   --ev-blue-soft: hsl(212 55% 91%);   --ev-blue-line: hsl(212 45% 79%);
-  --ev-purple-solid: hsl(262 38% 47%); --ev-purple-soft: hsl(262 48% 91%); --ev-purple-line: hsl(262 38% 81%);
-  --ev-pink-solid: hsl(340 55% 49%);   --ev-pink-soft: hsl(340 60% 91%);   --ev-pink-line: hsl(340 50% 81%);
-  --ev-gray-solid: hsl(30 8% 40%);     --ev-gray-soft: hsl(30 15% 89%);    --ev-gray-line: hsl(30 10% 77%);
+  --ev-red-solid: hsl(355 55% 44%);   --ev-red-soft: hsl(355 65% 92%);   --ev-red-line: hsl(355 55% 80%);
+  --ev-orange-solid: hsl(28 65% 42%); --ev-orange-soft: hsl(28 75% 90%); --ev-orange-line: hsl(28 65% 78%);
+  --ev-yellow-solid: hsl(42 65% 38%);  --ev-yellow-soft: hsl(45 80% 88%); --ev-yellow-line: hsl(45 70% 76%);
+  --ev-green-solid: hsl(145 40% 34%); --ev-green-soft: hsl(145 45% 90%); --ev-green-line: hsl(145 40% 76%);
+  --ev-teal-solid: hsl(178 45% 30%);  --ev-teal-soft: hsl(178 45% 89%);  --ev-teal-line: hsl(178 40% 74%);
+  --ev-blue-solid: hsl(215 50% 44%);  --ev-blue-soft: hsl(215 60% 92%);  --ev-blue-line: hsl(215 50% 80%);
+  --ev-purple-solid: hsl(265 40% 46%); --ev-purple-soft: hsl(265 50% 92%); --ev-purple-line: hsl(265 40% 82%);
+  --ev-pink-solid: hsl(330 50% 46%);  --ev-pink-soft: hsl(330 60% 92%);  --ev-pink-line: hsl(330 50% 82%);
+  --ev-gray-solid: hsl(0 0% 38%);     --ev-gray-soft: hsl(0 0% 90%);     --ev-gray-line: hsl(0 0% 78%);
 }
 
 :root {
@@ -190,14 +179,12 @@
   --shadow-md: 0 2px 6px rgba(27, 27, 25, 0.05), 0 18px 40px -24px rgba(27, 27, 25, 0.22);
   --shadow-lg: 0 6px 14px rgba(27, 27, 25, 0.06), 0 40px 80px -40px rgba(27, 27, 25, 0.3);
 
-  /* Type — Inter/Baloo 2 have no Thai glyphs, so the browser falls back
+  /* Type — Inter/Newsreader have no Thai glyphs, so the browser falls back
      per-character to Noto Sans Thai / Kanit for Thai text automatically;
      no locale switching needed. The families come from next/font (see
-     app/layout.tsx), which self-hosts them and exposes each as a variable.
-     --font-serif keeps its name for a minimal diff, but it's the display/
-     heading face now — bold and rounded (Baloo 2 / Kanit), not a serif. */
+     app/layout.tsx), which self-hosts them and exposes each as a variable. */
   --font-sans: var(--font-inter), var(--font-noto-thai), ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-  --font-serif: var(--font-baloo), var(--font-kanit), ui-rounded, 'SF Pro Rounded', system-ui, sans-serif;
+  --font-serif: var(--font-newsreader), var(--font-kanit), ui-serif, Georgia, 'Times New Roman', serif;
   --font-mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, monospace;
 
   /* Motion */
@@ -2078,18 +2065,6 @@ ol {
   gap: 6px;
 }
 
-/* Re-keyed by month in monthly/page.tsx, so switching months replays this
-   instead of the grid just popping to new content. */
-.cal-days {
-  animation: rise var(--normal) both;
-}
-
-/* Re-keyed by the week's anchor date in weekly/page.tsx — same idea for
-   ‹ › and jumping to a week from the date picker or Monthly view. */
-.week-view-fade {
-  animation: rise var(--normal) both;
-}
-
 .cal-weekdays div {
   text-align: center;
   font-size: 11.5px;
@@ -2100,27 +2075,18 @@ ol {
   padding-bottom: 10px;
 }
 
-/* A day cell is a small card now, not a centered square — the date number
-   anchors the top-left (like an actual calendar page), tag pills stack
-   below it. Content decides the height (min-height, not aspect-ratio), so
-   a day with 0 tasks and a day with "+3 more" both stay comfortable
-   instead of either clipping or leaving the empty ones oddly tall. */
 .cal-day {
-  min-height: 88px;
+  aspect-ratio: 1;
   border-radius: 14px;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  padding: 9px 9px 8px;
-  gap: 5px;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 17px;
+  font-variant-numeric: tabular-nums;
   color: var(--ink-soft);
   transition: background var(--fast), color var(--fast), transform var(--fast);
-}
-
-.cal-day-num {
-  font-size: 16px;
-  font-weight: 600;
-  font-variant-numeric: tabular-nums;
 }
 
 .cal-day:hover {
@@ -2128,17 +2094,14 @@ ol {
   transform: translateY(-1px);
 }
 
-.cal-day.weekend .cal-day-num {
+.cal-day.weekend {
   color: var(--ink-muted);
 }
 
 .cal-day.today {
   background: var(--ink);
   color: var(--paper);
-}
-
-.cal-day.today .cal-day-num {
-  color: var(--paper);
+  font-weight: 600;
 }
 
 .cal-day.blank {
@@ -2153,64 +2116,22 @@ ol {
   color: var(--accent);
 }
 
-.cal-day.week-hover .cal-day-num {
-  color: var(--accent);
-}
-
 .cal-day.today.week-hover {
   background: var(--ink);
   color: var(--paper);
 }
 
-.cal-day.today.week-hover .cal-day-num {
-  color: var(--paper);
-}
-
-.cal-tags {
+.cal-dots {
   display: flex;
-  flex-direction: column;
   gap: 3px;
-  width: 100%;
+  height: 5px;
 }
 
-.cal-tag {
-  max-width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  padding: 2px 7px;
-  border-radius: 6px;
-  font-size: 10.5px;
-  font-weight: 550;
-  line-height: 1.4;
-  background: var(--paper-sunken);
-  color: var(--ink-soft);
-}
-
-.cal-day.today .cal-tag {
-  background: rgba(255, 255, 255, 0.16);
-  color: var(--paper);
-}
-
-.cal-tag.ev-color-red { background: var(--ev-red-soft); color: var(--ev-red-solid); }
-.cal-tag.ev-color-orange { background: var(--ev-orange-soft); color: var(--ev-orange-solid); }
-.cal-tag.ev-color-yellow { background: var(--ev-yellow-soft); color: var(--ev-yellow-solid); }
-.cal-tag.ev-color-green { background: var(--ev-green-soft); color: var(--ev-green-solid); }
-.cal-tag.ev-color-teal { background: var(--ev-teal-soft); color: var(--ev-teal-solid); }
-.cal-tag.ev-color-blue { background: var(--ev-blue-soft); color: var(--ev-blue-solid); }
-.cal-tag.ev-color-purple { background: var(--ev-purple-soft); color: var(--ev-purple-solid); }
-.cal-tag.ev-color-pink { background: var(--ev-pink-soft); color: var(--ev-pink-solid); }
-.cal-tag.ev-color-gray { background: var(--ev-gray-soft); color: var(--ev-gray-solid); }
-
-.cal-tag-more {
-  font-size: 10px;
-  font-weight: 600;
-  color: var(--ink-faint);
-  padding: 0 2px;
-}
-
-.cal-day.today .cal-tag-more {
-  color: rgba(255, 255, 255, 0.7);
+.cal-dots i {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--ink-faint);
 }
 
 .cal-day.today .cal-dots i {
@@ -2333,20 +2254,11 @@ ol {
   margin: -8px 0 16px;
 }
 
-.week-belongs {
-  margin-top: 8px;
-}
-
 .datepicker-menu {
   right: auto;
   left: 0;
   min-width: 260px;
   padding: 10px 12px 12px;
-}
-
-.color-menu {
-  min-width: 216px;
-  padding: 12px;
 }
 
 .datepicker-nav {
@@ -3911,6 +3823,6 @@ ol {
   }
 
   body {
-    background: var(--paper);
+    background: #fff;
   }
 }

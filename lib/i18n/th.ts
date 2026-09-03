@@ -30,7 +30,6 @@ const th: Dictionary = {
     dismiss: 'ปิด',
     navLimit: 'ไม่สามารถเลื่อนเกิน 10 ปีจากวันนี้ได้',
     somethingWentWrong: 'เกิดข้อผิดพลาด ลองใหม่อีกครั้ง',
-    moreCount: (n) => `อีก ${n} รายการ`,
   },
   dates: {
     months: [
