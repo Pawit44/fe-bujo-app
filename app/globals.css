@@ -1953,6 +1953,16 @@ ol {
   white-space: nowrap;
 }
 
+.pill-link {
+  color: var(--ink-soft);
+  transition: background var(--fast), color var(--fast);
+}
+
+.pill-link:hover {
+  background: var(--paper-hover);
+  color: var(--ink);
+}
+
 .pill-pinned {
   display: inline-flex;
   align-items: center;
@@ -2220,6 +2230,36 @@ ol {
   background: var(--paper);
   color: var(--ink);
   box-shadow: var(--shadow-sm);
+}
+
+/* --------------------------------------------------------------------------
+   Daily log — "which week/month" breadcrumb + date-picker popover
+   -------------------------------------------------------------------------- */
+
+.daily-belongs {
+  display: flex;
+  gap: 8px;
+  margin: -8px 0 16px;
+}
+
+.datepicker-menu {
+  right: auto;
+  left: 0;
+  min-width: 260px;
+  padding: 10px 12px 12px;
+}
+
+.datepicker-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 6px;
+}
+
+.datepicker-month {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
 }
 
 /* Deliberately not a spreadsheet grid: each day is its own soft rounded

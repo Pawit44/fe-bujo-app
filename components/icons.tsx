@@ -3,6 +3,7 @@
 import {
   BookOpen,
   Briefcase,
+  CalendarCheck,
   CalendarDays,
   CalendarRange,
   Compass,
@@ -27,6 +28,7 @@ import {
 /** One icon per spread — shared by the sidebar nav and the Index page cards, so they always match. */
 export const LOG_ICONS = {
   index: LayoutList,
+  daily: CalendarCheck,
   future: CalendarRange,
   monthly: CalendarDays,
   weekly: Rows3,

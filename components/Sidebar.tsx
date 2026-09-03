@@ -35,10 +35,11 @@ export default function Sidebar() {
     useReminderPreference();
   useReminderEngine(remindersEnabled);
 
-  // Weekly is the app's main event — where daily capture actually happens —
-  // so it gets its own prominent row instead of sitting in a plain list
-  // alongside logs that are opened far less often.
+  // Daily is the app's main event — where capture actually happens, day by
+  // day — so it gets its own prominent row instead of sitting in a plain
+  // list alongside logs that are opened far less often.
   const SECONDARY_LOGS = [
+    { href: '/weekly', icon: LOG_ICONS.weekly, label: t.sidebar.logs.weekly, count: 0 },
     { href: '/monthly', icon: LOG_ICONS.monthly, label: t.sidebar.logs.monthly, count: 0 },
     { href: '/future', icon: LOG_ICONS.future, label: t.sidebar.logs.future, count: 0 },
     // The migration ritual, surfaced as a badge — a number here is the whole
@@ -155,13 +156,13 @@ export default function Sidebar() {
           {t.sidebar.logs.index}
         </Link>
 
-        <Link href="/weekly" className={`nav-item nav-item-primary ${isActive('/weekly') ? 'active' : ''}`}>
+        <Link href="/daily" className={`nav-item nav-item-primary ${isActive('/daily') ? 'active' : ''}`}>
           <span className="nav-icon">
-            <LOG_ICONS.weekly size={19} strokeWidth={1.8} />
+            <LOG_ICONS.daily size={19} strokeWidth={1.8} />
           </span>
           <span className="nav-item-primary-text">
-            {t.sidebar.logs.weekly}
-            <span className="nav-item-primary-sub">{t.sidebar.weeklyHint}</span>
+            {t.sidebar.logs.daily}
+            <span className="nav-item-primary-sub">{t.sidebar.dailyHint}</span>
           </span>
         </Link>
       </nav>

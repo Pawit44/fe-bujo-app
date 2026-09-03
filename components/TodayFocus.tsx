@@ -117,7 +117,7 @@ export default function TodayFocus() {
         </div>
       )}
 
-      <Link href="/weekly" className="today-focus-link">
+      <Link href="/daily" className="today-focus-link">
         {total === 0 ? t.todayFocus.goAddCta : t.todayFocus.goToDailyLogCta}
         <ArrowRight size={14} strokeWidth={2} />
       </Link>
