@@ -32,6 +32,16 @@
   --accent-soft: #eef2f8;
   --accent-line: #ccd7e8;
 
+  /* A solid gradient fill for "featured" surfaces (the primary nav item,
+     the Daily Log hero card) plus the text color guaranteed to read on it.
+     Deliberately separate from --accent/--paper: those two invert together
+     in the dark theme (accent goes light so it reads as *text* on a dark
+     page), which would leave a light-on-light gradient here. This pair
+     always stays "dark fill, white text" no matter which theme is active. */
+  --feature-accent: #3f5b8b;
+  --feature-accent-2: #2c4066;
+  --feature-ink: #ffffff;
+
   /* Semantic */
   --done: #6f8f6a;
   --priority: #b4735a;
@@ -82,6 +92,13 @@
   --accent-soft: #26313f;
   --accent-line: #3a4a63;
 
+  /* --accent itself is deliberately light here (it doubles as readable text
+     on this theme's dark paper) — too light for white text to sit on, so
+     the featured-surface fill gets its own, deeper blue instead of reusing it. */
+  --feature-accent: #3a5488;
+  --feature-accent-2: #263a5e;
+  --feature-ink: #ffffff;
+
   --done: #8fb388;
   --priority: #d38f70;
   --inspiration: #d4b566;
@@ -123,6 +140,10 @@
   --accent: #4c7a53;
   --accent-soft: #ecf3ea;
   --accent-line: #c9dcc9;
+
+  --feature-accent: #4c7a53;
+  --feature-accent-2: #345638;
+  --feature-ink: #ffffff;
 
   --done: #6f8f6a;
   --priority: #b4735a;
@@ -468,8 +489,8 @@ ol {
    so its nav row looks like a small feature card, not just another list
    item, whether or not it happens to be the active route right now. */
 .nav-item-primary {
-  background: linear-gradient(135deg, var(--accent) 0%, color-mix(in srgb, var(--accent) 78%, black) 100%);
-  color: var(--paper);
+  background: linear-gradient(135deg, var(--feature-accent) 0%, var(--feature-accent-2) 100%);
+  color: var(--feature-ink);
   padding: 12px 12px;
   margin: 2px 0 4px;
   box-shadow: var(--shadow-sm);
@@ -483,13 +504,13 @@ ol {
 }
 
 .nav-item-primary:hover {
-  color: var(--paper);
+  color: var(--feature-ink);
   transform: translateY(-1px);
   box-shadow: var(--shadow-md);
 }
 
 .nav-item-primary.active {
-  color: var(--paper);
+  color: var(--feature-ink);
 }
 
 .nav-item-primary.active::before {
@@ -1308,10 +1329,22 @@ ol {
   padding: 4px;
 }
 
-.today-focus-add {
+.today-focus-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
   margin-top: 14px;
   padding-top: 12px;
   border-top: 1px solid var(--line);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--accent);
+  transition: gap var(--fast);
+}
+
+.today-focus-link:hover {
+  gap: 9px;
 }
 
 @media (max-width: 560px) {
@@ -1716,8 +1749,8 @@ ol {
   gap: 18px;
   padding: 22px 24px;
   margin-top: 20px;
-  background: linear-gradient(120deg, var(--accent) 0%, color-mix(in srgb, var(--accent) 74%, black) 100%);
-  color: var(--paper);
+  background: linear-gradient(120deg, var(--feature-accent) 0%, var(--feature-accent-2) 100%);
+  color: var(--feature-ink);
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow-md);
   transition: transform var(--normal), box-shadow var(--normal);
@@ -1790,7 +1823,7 @@ ol {
 }
 
 .log-card-featured-stats .bar span {
-  background: var(--paper);
+  background: var(--feature-ink);
 }
 
 .log-card-featured-stats .muted {
@@ -2189,11 +2222,16 @@ ol {
   box-shadow: var(--shadow-sm);
 }
 
+/* Deliberately not a spreadsheet grid: each day is its own soft rounded
+   column standing slightly apart (a gap, not a ruled line, separates them),
+   and the hour rule is dotted rather than solid — closer to a dot-grid
+   journal page than an off-the-shelf calendar app. */
 .timeline-wrap {
-  background: var(--paper);
+  background: var(--paper-sunken);
   border: 1px solid var(--line);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-sm);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-md);
+  padding: 6px;
   overflow: hidden;
 }
 
@@ -2201,45 +2239,51 @@ ol {
 .timeline-alldays-row,
 .timeline-body {
   display: grid;
-  grid-template-columns: 48px repeat(7, minmax(0, 1fr));
-}
-
-.timeline-header-row {
-  border-bottom: 1px solid var(--line);
+  grid-template-columns: 40px repeat(7, minmax(0, 1fr));
+  column-gap: 3px;
 }
 
 .timeline-corner,
 .timeline-corner-label {
-  border-right: 1px solid var(--line);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
 }
 
 .timeline-corner-label {
-  font-size: 10px;
+  font-size: 9.5px;
   color: var(--ink-faint);
-  display: flex;
-  align-items: center;
-  justify-content: center;
   text-align: center;
-  padding: 4px 2px;
+  padding: 4px 2px 6px;
 }
 
 .timeline-header-cell {
   text-align: center;
-  padding: 10px 4px;
-  border-left: 1px solid var(--line);
+  padding: 10px 4px 8px;
+  background: var(--paper);
+  border-radius: 12px 12px 0 0;
+}
+
+.timeline-header-cell.is-today {
+  background: var(--accent-soft);
+}
+
+.timeline-header-cell.is-today .timeline-day-name {
+  color: var(--accent);
 }
 
 .timeline-header-cell.is-today .timeline-day-num {
-  color: var(--paper);
-  background: var(--ink);
+  color: var(--feature-ink);
+  background: var(--feature-accent);
   border-radius: 20px;
-  padding: 1px 8px;
+  padding: 1px 9px;
   display: inline-block;
-  margin-top: 2px;
+  margin-top: 3px;
+  box-shadow: var(--shadow-sm);
 }
 
 .timeline-day-name {
-  font-size: 11px;
+  font-size: clamp(9.5px, 2.6vw, 11px);
   text-transform: uppercase;
   letter-spacing: 0.04em;
   color: var(--ink-muted);
@@ -2252,8 +2296,7 @@ ol {
 }
 
 .timeline-alldays-row {
-  border-bottom: 1px solid var(--line);
-  min-height: 34px;
+  min-height: 36px;
 }
 
 .timeline-allday-cell {
@@ -2261,8 +2304,12 @@ ol {
   flex-wrap: wrap;
   align-items: center;
   gap: 4px;
-  padding: 5px 5px;
-  border-left: 1px solid var(--line);
+  padding: 5px 6px;
+  background: var(--paper);
+}
+
+.timeline-allday-cell.is-today {
+  background: var(--accent-soft);
 }
 
 .allday-chip {
@@ -2270,74 +2317,83 @@ ol {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  padding: 2px 8px;
+  padding: 3px 9px;
   border-radius: 999px;
   background: var(--paper-sunken);
   color: var(--ink-soft);
   font-size: 11px;
+  transition: background var(--fast), transform var(--fast);
 }
 
 .allday-chip:hover {
   background: var(--paper-hover);
+  transform: translateY(-1px);
 }
 
 .allday-add {
-  width: 18px;
-  height: 18px;
+  width: 22px;
+  height: 22px;
   border-radius: 50%;
   display: grid;
   place-items: center;
   color: var(--ink-faint);
   flex-shrink: 0;
+  transition: background var(--fast), color var(--fast);
 }
 
 .allday-add:hover {
   background: var(--paper-hover);
-  color: var(--ink);
+  color: var(--accent);
 }
 
 .timeline-body {
   position: relative;
   max-height: 640px;
   overflow-y: auto;
+  border-radius: 0 0 12px 12px;
+  overflow-x: hidden;
 }
 
 .timeline-gutter {
   position: relative;
-  border-right: 1px solid var(--line);
+  background: var(--paper-sunken);
 }
 
 .timeline-hour-label {
   position: absolute;
   right: 6px;
   transform: translateY(-50%);
-  font-size: 10.5px;
+  font-size: 10px;
   color: var(--ink-faint);
   font-variant-numeric: tabular-nums;
 }
 
 .timeline-col {
   position: relative;
-  border-left: 1px solid var(--line);
+  background: var(--paper);
+  border-radius: 0 0 12px 12px;
 }
 
 .timeline-col.is-today {
   background: var(--accent-soft);
 }
 
+/* Dotted, not ruled — a page of dots reads as "journal", a page of solid
+   lines reads as "spreadsheet". */
 .timeline-hour-line {
   position: absolute;
-  left: 0;
-  right: 0;
-  border-top: 1px solid var(--line);
+  left: 6px;
+  right: 6px;
+  border-top: 1.5px dotted var(--line-strong);
   pointer-events: none;
 }
 
 .timeline-slot {
   position: absolute;
-  left: 0;
-  right: 0;
+  left: 2px;
+  right: 2px;
   z-index: 1;
+  border-radius: 8px;
   display: grid;
   place-items: center;
   color: var(--accent);
@@ -2364,28 +2420,28 @@ ol {
   left: 0;
   right: 0;
   height: 2px;
-  background: var(--danger);
+  background: linear-gradient(90deg, var(--danger) 0%, color-mix(in srgb, var(--danger) 25%, transparent) 85%);
   z-index: 5;
   pointer-events: none;
 }
 
-.timeline-now-line::before {
-  content: '';
+.timeline-now-dot {
   position: absolute;
   left: -3px;
-  top: -3px;
-  width: 8px;
-  height: 8px;
+  top: -3.5px;
+  width: 9px;
+  height: 9px;
   border-radius: 50%;
   background: var(--danger);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--danger) 20%, transparent);
 }
 
 .timeline-block {
   position: absolute;
   z-index: 2;
   overflow: hidden;
-  border-radius: 6px;
-  padding: 3px 6px;
+  border-radius: 10px;
+  padding: 4px 8px;
   text-align: left;
   font-size: 11px;
   line-height: 1.3;
@@ -2395,11 +2451,13 @@ ol {
   display: flex;
   flex-direction: column;
   gap: 1px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
   transition: box-shadow var(--fast), transform var(--fast);
 }
 
 .timeline-block:hover {
   box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
   z-index: 3;
 }
 
@@ -2424,9 +2482,17 @@ ol {
 }
 
 .timeline-block .block-time {
+  display: flex;
+  align-items: center;
+  gap: 3px;
   font-size: 9.5px;
   color: var(--ink-muted);
   font-variant-numeric: tabular-nums;
+}
+
+.block-glyph {
+  font-family: var(--font-mono);
+  font-weight: 700;
 }
 
 .timeline-block .block-content {
@@ -2438,8 +2504,8 @@ ol {
 
 .timeline-block .block-bell {
   position: absolute;
-  top: 4px;
-  right: 4px;
+  top: 5px;
+  right: 5px;
   color: var(--ink-muted);
 }
 
@@ -2448,18 +2514,23 @@ ol {
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  padding: 10px 12px;
-  border-bottom: 1px solid var(--line);
-  background: var(--paper-soft);
+  padding: 6px 4px 10px;
+}
+
+.timeline-day-switcher .btn-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  flex-shrink: 0;
 }
 
 .timeline-day-switcher-label {
-  font-weight: 600;
-  font-size: 13.5px;
+  font-weight: 650;
+  font-size: 14.5px;
   text-align: center;
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 7px;
   justify-content: center;
 }
 
@@ -2469,7 +2540,7 @@ ol {
   color: var(--paper);
   background: var(--accent);
   border-radius: 999px;
-  padding: 2px 7px;
+  padding: 2px 8px;
 }
 
 /* Single-day mode (narrow screens): one wide column instead of squeezing
@@ -2481,12 +2552,27 @@ ol {
 
 .timeline-wrap.is-single-day .timeline-alldays-row,
 .timeline-wrap.is-single-day .timeline-body {
-  grid-template-columns: 42px 1fr;
+  grid-template-columns: 36px 1fr;
+}
+
+.timeline-wrap.is-single-day .timeline-block .block-content {
+  font-size: 12px;
 }
 
 @media (max-width: 760px) {
   .view-toggle button span {
     display: none;
+  }
+}
+
+@media (max-width: 380px) {
+  .timeline-day-switcher-label {
+    font-size: 13px;
+  }
+
+  .timeline-day-switcher .btn-icon {
+    width: 36px;
+    height: 36px;
   }
 }
 

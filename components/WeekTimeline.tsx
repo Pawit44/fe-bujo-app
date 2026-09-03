@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Bell, ChevronLeft, ChevronRight, Plus } from 'lucide-react';
 import EventEditor, { type EventDraft } from './EventEditor';
+import { glyphFor } from './Bullet';
 import { useI18n } from '@/lib/i18n';
 import { formatDayLong, isToday } from '@/lib/date';
 import { useMediaQuery } from '@/lib/useMediaQuery';
@@ -196,7 +197,7 @@ export default function WeekTimeline({
         {visibleDays.map((iso) => {
           const untimed = layout.get(iso)?.untimed ?? [];
           return (
-            <div key={iso} className="timeline-allday-cell">
+            <div key={iso} className={`timeline-allday-cell ${isToday(iso) ? 'is-today' : ''}`}>
               {untimed.map((entry) => (
                 <button
                   key={entry.id}
@@ -258,7 +259,9 @@ export default function WeekTimeline({
               ))}
 
               {isToday(iso) && nowMinute >= TIMELINE_START_HOUR * 60 && (
-                <div className="timeline-now-line" style={{ top: minuteToY(nowMinute) }} />
+                <div className="timeline-now-line" style={{ top: minuteToY(nowMinute) }}>
+                  <span className="timeline-now-dot" />
+                </div>
               )}
 
               {timed.map((entry) => {
@@ -284,6 +287,7 @@ export default function WeekTimeline({
                   >
                     {entry.reminderMinutes !== null && <Bell size={10} strokeWidth={2} className="block-bell" />}
                     <span className="block-time">
+                      <span className="block-glyph">{glyphFor(entry.type, entry.status)}</span>
                       {entry.startTime}
                       {entry.endTime ? `–${entry.endTime}` : ''}
                     </span>

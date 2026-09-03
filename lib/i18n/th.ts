@@ -211,8 +211,9 @@ const th: Dictionary = {
     subtitleCount: (n: number) => `${n} งานที่ต้องทำวันนี้`,
     percentDone: 'ของวันนี้เสร็จแล้ว',
     emptyTitle: 'วันนี้ยังไม่มีงานกำหนดไว้',
-    emptySubtitle: 'เพิ่มงานแรกของวันนี้เลย',
-    addPlaceholder: 'เพิ่มงานสำหรับวันนี้…',
+    emptySubtitle: 'ภาพรวมของวันนี้',
+    goAddCta: 'เพิ่มงานสำหรับวันนี้',
+    goToDailyLogCta: 'เปิดในบันทึกประจำวัน',
     doneSectionTitle: (n: number) => `เสร็จแล้ว ${n} งาน`,
     messages: {
       start: 'เริ่มกันเลย!',
