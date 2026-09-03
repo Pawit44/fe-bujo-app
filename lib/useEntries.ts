@@ -60,6 +60,10 @@ export function useEntries(params: Params) {
         inspiration: draft.inspiration ?? false,
         position: Number.MAX_SAFE_INTEGER,
         notes: '',
+        startTime: draft.startTime ?? '',
+        endTime: draft.endTime ?? '',
+        color: draft.color ?? '',
+        reminderMinutes: draft.reminderMinutes ?? null,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       };

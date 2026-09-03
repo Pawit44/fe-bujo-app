@@ -1,10 +1,11 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { Sparkles, Star, Trash2 } from 'lucide-react';
+import { Bell, Clock, Sparkles, Star, Trash2 } from 'lucide-react';
 import Bullet from './Bullet';
 import MigrateMenu from './MigrateMenu';
 import FolderMenu from './FolderMenu';
+import EventEditor, { type EventDraft } from './EventEditor';
 import { useI18n } from '@/lib/i18n';
 import type { Collection, Entry, Folder, MigrateTarget } from '@/lib/types';
 
@@ -47,7 +48,9 @@ export default function EntryRow({
   const { t } = useI18n();
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(entry.content);
+  const [timeEditorOpen, setTimeEditorOpen] = useState(false);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const hasTime = !!entry.startTime;
 
   useEffect(() => setDraft(entry.content), [entry.content]);
 
@@ -134,10 +137,30 @@ export default function EntryRow({
             {entry.content}
           </span>
         )}
-        {showContext && <div className="entry-meta">{showContext}</div>}
+        {(showContext || hasTime) && (
+          <div className="entry-meta">
+            {hasTime && (
+              <span className={`entry-time-badge ${entry.color ? `ev-color-${entry.color}` : ''}`}>
+                <Clock size={11} strokeWidth={2} />
+                {entry.startTime}
+                {entry.endTime ? `–${entry.endTime}` : ''}
+                {entry.reminderMinutes !== null && <Bell size={10} strokeWidth={2} />}
+              </span>
+            )}
+            {showContext}
+          </div>
+        )}
       </div>
 
       <div className="entry-actions">
+        <button
+          type="button"
+          className={`act ${hasTime ? 'has-time' : ''}`}
+          title={hasTime ? t.entry.editTime : t.entry.setTime}
+          onClick={() => setTimeEditorOpen(true)}
+        >
+          <Clock size={14} strokeWidth={1.8} />
+        </button>
         <button
           type="button"
           className={`act ${entry.priority ? 'on' : ''}`}
@@ -166,6 +189,38 @@ export default function EntryRow({
           <Trash2 size={14} strokeWidth={1.8} />
         </button>
       </div>
+
+      {timeEditorOpen && (
+        <EventEditor
+          mode={hasTime ? 'edit' : 'create'}
+          initial={{
+            content: entry.content,
+            startTime: entry.startTime || '09:00',
+            endTime: entry.endTime || '10:00',
+            color: entry.color,
+            reminderMinutes: entry.reminderMinutes,
+          }}
+          onSave={(draft: EventDraft) => {
+            onUpdate(entry, {
+              content: draft.content,
+              startTime: draft.startTime,
+              endTime: draft.endTime,
+              color: draft.color,
+              reminderMinutes: draft.reminderMinutes,
+            });
+            setTimeEditorOpen(false);
+          }}
+          onClearTime={
+            hasTime
+              ? () => {
+                  onUpdate(entry, { startTime: '', endTime: '', color: '', reminderMinutes: null });
+                  setTimeEditorOpen(false);
+                }
+              : undefined
+          }
+          onClose={() => setTimeEditorOpen(false)}
+        />
+      )}
     </div>
   );
 }

@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { CircleHelp, Leaf, LogOut, Menu, Moon, Plus, ShieldCheck, Sun, Trash2, X } from 'lucide-react';
+import { Bell, BellOff, CircleHelp, Leaf, LogOut, Menu, Moon, Plus, ShieldCheck, Sun, Trash2, X } from 'lucide-react';
 import { useCollections } from '@/lib/useCollections';
 import { useOverview } from '@/lib/useOverview';
 import { useI18n, LOCALES } from '@/lib/i18n';
@@ -11,6 +11,7 @@ import { useTheme } from '@/lib/ThemeProvider';
 import { useAuth } from '@/lib/AuthProvider';
 import { useScrollLock } from '@/lib/useScrollLock';
 import { nextThemeId } from '@/lib/theme';
+import { useReminderEngine, useReminderPreference } from '@/lib/useReminders';
 import { CollectionIcon, LOG_ICONS } from './icons';
 import BrandMark from './BrandMark';
 import HelpModal from './HelpModal';
@@ -30,6 +31,9 @@ export default function Sidebar() {
   const { t, locale, setLocale } = useI18n();
   const { theme, setTheme } = useTheme();
   const { user, logout } = useAuth();
+  const { enabled: remindersEnabled, permission, enable: enableReminders, disable: disableReminders } =
+    useReminderPreference();
+  useReminderEngine(remindersEnabled);
 
   const LOGS = [
     { href: '/', icon: LOG_ICONS.index, label: t.sidebar.logs.index, count: 0 },
@@ -124,6 +128,22 @@ export default function Sidebar() {
         >
           <ThemeIcon size={15} strokeWidth={1.8} />
         </button>
+        {permission !== 'unsupported' && (
+          <button
+            type="button"
+            className={`theme-toggle ${remindersEnabled ? 'on' : ''}`}
+            title={
+              permission === 'denied'
+                ? t.reminders.blocked
+                : remindersEnabled
+                  ? t.reminders.enabled
+                  : t.reminders.enable
+            }
+            onClick={() => (remindersEnabled ? disableReminders() : enableReminders())}
+          >
+            {remindersEnabled ? <Bell size={15} strokeWidth={1.8} /> : <BellOff size={15} strokeWidth={1.8} />}
+          </button>
+        )}
       </div>
 
       <nav className="nav-group">

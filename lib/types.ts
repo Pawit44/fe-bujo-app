@@ -28,6 +28,16 @@ export interface Entry {
   inspiration: boolean;
   position: number;
   notes: string;
+  /** "HH:MM" (24h), or "" when this entry has no time set. Only meaningful
+   * on weekly-log entries — the timeline view positions/tints by these. */
+  startTime: string;
+  endTime: string;
+  /** Palette token (see EVENT_COLORS in lib/eventColors.ts), or "" for the
+   * default uncolored look. */
+  color: string;
+  /** Minutes before startTime to notify, 0 meaning "at start time"; null
+   * means no reminder is set. Meaningless without startTime. */
+  reminderMinutes: number | null;
   createdAt: string;
   updatedAt: string;
 }

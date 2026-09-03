@@ -2,7 +2,9 @@
 
 import { Suspense, useMemo, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
+import { CalendarClock, ListTodo } from 'lucide-react';
 import EntryList from '@/components/EntryList';
+import WeekTimeline from '@/components/WeekTimeline';
 import ErrorToast from '@/components/ErrorToast';
 import {
   addDays,
@@ -43,6 +45,7 @@ function WeeklyLog() {
   const { t } = useI18n();
   const dateParam = useSearchParams().get('date');
   const [anchor, setAnchor] = useState(() => initialAnchor(dateParam));
+  const [view, setView] = useState<'list' | 'timeline'>('timeline');
   const collections = useCollections();
 
   const days = useMemo(() => weekDays(fromISODate(anchor)), [anchor]);
@@ -76,6 +79,26 @@ function WeeklyLog() {
         </div>
 
         <div className="head-actions">
+          <div className="view-toggle" role="group" aria-label="View">
+            <button
+              type="button"
+              className={view === 'timeline' ? 'on' : ''}
+              onClick={() => setView('timeline')}
+              title={t.weekly.viewTimeline}
+            >
+              <CalendarClock size={14} strokeWidth={1.8} />
+              <span>{t.weekly.viewTimeline}</span>
+            </button>
+            <button
+              type="button"
+              className={view === 'list' ? 'on' : ''}
+              onClick={() => setView('list')}
+              title={t.weekly.viewList}
+            >
+              <ListTodo size={14} strokeWidth={1.8} />
+              <span>{t.weekly.viewList}</span>
+            </button>
+          </div>
           <button
             className="btn btn-icon"
             onClick={() => shift(-1)}
@@ -104,6 +127,14 @@ function WeeklyLog() {
             <div key={d} className="skeleton" style={{ height: 190 }} />
           ))}
         </div>
+      ) : view === 'timeline' ? (
+        <WeekTimeline
+          days={days}
+          byDay={byDay}
+          onAdd={journal.add}
+          onUpdate={journal.update}
+          onDelete={journal.remove}
+        />
       ) : (
         <div className="week-grid">
           {days.map((iso, i) => (
