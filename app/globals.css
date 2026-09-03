@@ -504,12 +504,14 @@ ol {
 }
 
 .nav-item-primary:hover {
+  background: linear-gradient(135deg, var(--feature-accent) 0%, var(--feature-accent-2) 100%);
   color: var(--feature-ink);
   transform: translateY(-1px);
   box-shadow: var(--shadow-md);
 }
 
 .nav-item-primary.active {
+  background: linear-gradient(135deg, var(--feature-accent) 0%, var(--feature-accent-2) 100%);
   color: var(--feature-ink);
 }
 
