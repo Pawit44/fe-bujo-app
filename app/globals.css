@@ -2695,6 +2695,34 @@ ol {
   box-shadow: 0 0 0 3px var(--accent-soft);
 }
 
+.password-field {
+  position: relative;
+}
+
+.password-field input {
+  width: 100%;
+  padding-right: 40px;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  border-radius: 7px;
+  color: var(--ink-faint);
+  transition: background var(--fast), color var(--fast);
+}
+
+.password-toggle:hover {
+  background: var(--paper-hover);
+  color: var(--ink-soft);
+}
+
 .icon-picker {
   display: flex;
   flex-wrap: wrap;

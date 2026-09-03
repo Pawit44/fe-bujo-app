@@ -7,6 +7,7 @@ import { useAuth } from '@/lib/AuthProvider';
 import { describeError } from '@/lib/api';
 import { useI18n } from '@/lib/i18n';
 import BrandMark from '@/components/BrandMark';
+import PasswordField from '@/components/PasswordField';
 
 // useSearchParams needs a Suspense boundary, otherwise the whole route opts
 // out of static prerendering.
@@ -78,18 +79,15 @@ function LoginForm() {
           />
         </div>
 
-        <div className="field">
-          <label htmlFor="password">{t.auth.passwordLabel}</label>
-          <input
-            id="password"
-            type="password"
-            autoComplete="current-password"
-            required
-            value={password}
-            placeholder={t.auth.passwordPlaceholder}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-        </div>
+        <PasswordField
+          id="password"
+          label={t.auth.passwordLabel}
+          autoComplete="current-password"
+          required
+          value={password}
+          placeholder={t.auth.passwordPlaceholder}
+          onChange={(e) => setPassword(e.target.value)}
+        />
 
         {error && <div className="auth-error">{error}</div>}
 

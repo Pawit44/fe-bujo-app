@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Modal from './Modal';
+import PasswordField from './PasswordField';
 import { useAuth } from '@/lib/AuthProvider';
 import { describeError } from '@/lib/api';
 import { useI18n } from '@/lib/i18n';
@@ -34,17 +35,14 @@ export default function DeleteAccountModal({ onClose }: { onClose: () => void })
       <p className="muted" style={{ fontSize: 13.5, marginBottom: 16 }}>
         {t.auth.deleteAccountWarning}
       </p>
-      <div className="field">
-        <label htmlFor="confirm-password">{t.auth.confirmPasswordLabel}</label>
-        <input
-          id="confirm-password"
-          type="password"
-          autoFocus
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          onKeyDown={(e) => e.key === 'Enter' && submit()}
-        />
-      </div>
+      <PasswordField
+        id="confirm-password"
+        label={t.auth.confirmPasswordLabel}
+        autoFocus
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        onKeyDown={(e) => e.key === 'Enter' && submit()}
+      />
       {error && <div className="auth-error">{error}</div>}
       <div className="modal-actions">
         <button className="btn" onClick={onClose}>

@@ -276,6 +276,8 @@ const en = {
     passwordLabel: 'Password',
     passwordPlaceholder: '',
     passwordHint: 'At least 8 characters',
+    showPassword: 'Show password',
+    hidePassword: 'Hide password',
     nameLabel: 'Name',
     namePlaceholder: 'Your name',
     loginTitle: 'Welcome back',

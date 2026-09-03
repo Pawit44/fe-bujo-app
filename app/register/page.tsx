@@ -7,6 +7,7 @@ import { useAuth } from '@/lib/AuthProvider';
 import { describeError } from '@/lib/api';
 import { useI18n } from '@/lib/i18n';
 import BrandMark from '@/components/BrandMark';
+import PasswordField from '@/components/PasswordField';
 
 export default function RegisterPage() {
   const { t } = useI18n();
@@ -82,22 +83,21 @@ export default function RegisterPage() {
           />
         </div>
 
-        <div className="field">
-          <label htmlFor="password">{t.auth.passwordLabel}</label>
-          <input
-            id="password"
-            type="password"
-            autoComplete="new-password"
-            required
-            minLength={8}
-            value={password}
-            placeholder={t.auth.passwordPlaceholder}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-          <span className="muted" style={{ fontSize: 11.5 }}>
-            {t.auth.passwordHint}
-          </span>
-        </div>
+        <PasswordField
+          id="password"
+          label={t.auth.passwordLabel}
+          autoComplete="new-password"
+          required
+          minLength={8}
+          value={password}
+          placeholder={t.auth.passwordPlaceholder}
+          onChange={(e) => setPassword(e.target.value)}
+          hint={
+            <span className="muted" style={{ fontSize: 11.5 }}>
+              {t.auth.passwordHint}
+            </span>
+          }
+        />
 
         <label className="consent-check">
           <input type="checkbox" checked={agreed} onChange={(e) => setAgreed(e.target.checked)} required />

@@ -270,6 +270,8 @@ const th: Dictionary = {
     passwordLabel: 'รหัสผ่าน',
     passwordPlaceholder: '',
     passwordHint: 'อย่างน้อย 8 ตัวอักษร',
+    showPassword: 'แสดงรหัสผ่าน',
+    hidePassword: 'ซ่อนรหัสผ่าน',
     nameLabel: 'ชื่อ',
     namePlaceholder: 'ชื่อของคุณ',
     loginTitle: 'ยินดีต้อนรับกลับ',
