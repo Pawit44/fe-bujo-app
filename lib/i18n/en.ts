@@ -121,6 +121,8 @@ const en = {
     recentActivityTitle: 'Recent activity',
     recentActivityHint: 'Tap any entry to jump straight to where it lives.',
     couldNotReach: 'Could not reach the journal API.',
+    weeklyFeaturedEyebrow: 'Your week',
+    weeklyFeaturedCta: 'Open',
     reviewBanner: (n: number) => `${n} ${n === 1 ? 'entry needs' : 'entries need'} a second look`,
     reviewBannerBlurb: 'Tasks from days and months that have already passed — mark them done, move them forward, or let them go.',
     reviewBannerCta: 'Review now',
