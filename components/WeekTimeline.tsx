@@ -1,26 +1,20 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Bell, Plus } from 'lucide-react';
 import EventEditor, { type EventDraft } from './EventEditor';
 import { useI18n } from '@/lib/i18n';
 import { formatDayLong, isToday } from '@/lib/date';
 import {
+  TIMELINE_END_HOUR,
   TIMELINE_HEIGHT,
   TIMELINE_HOURS,
   TIMELINE_START_HOUR,
   minuteToY,
   minutesToTime,
   timeToMinutes,
-  yToMinute,
 } from '@/lib/timeline';
 import type { Entry, EntryDraft } from '@/lib/types';
-
-interface DragState {
-  dayIndex: number;
-  startMin: number;
-  curMin: number;
-}
 
 interface EditorState {
   mode: 'create' | 'edit';
@@ -29,8 +23,11 @@ interface EditorState {
   initial: EventDraft;
 }
 
-/** Google/Apple-calendar-style week grid: one hour-ruled column per day,
- * drag (or tap) a range to create a timed entry, click a block to edit it.
+/** Google/Apple-calendar-style week grid: one hour-ruled column per day.
+ * Tapping any hour opens the editor pre-filled with that hour — no
+ * drag-to-select, which is fiddly on a small grid and worse on touch. The
+ * editor's own start/end time fields (plus duration chips) are how the time
+ * gets refined, so one clean tap always beats needing a precise drag.
  * Untimed entries surface as a small chip row above the grid instead of
  * disappearing — tapping one is the fastest way to give it a time. */
 export default function WeekTimeline({
@@ -47,10 +44,8 @@ export default function WeekTimeline({
   onDelete: (entry: Entry) => void;
 }) {
   const { t } = useI18n();
-  const [drag, setDrag] = useState<DragState | null>(null);
   const [editor, setEditor] = useState<EditorState | null>(null);
   const [now, setNow] = useState(() => new Date());
-  const colRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   useEffect(() => {
     const id = setInterval(() => setNow(new Date()), 60_000);
@@ -149,33 +144,6 @@ export default function WeekTimeline({
     closeEditor();
   };
 
-  const pointerDown = (dayIndex: number) => (e: ReactPointerEvent<HTMLDivElement>) => {
-    const col = colRefs.current[dayIndex];
-    if (!col) return;
-    col.setPointerCapture(e.pointerId);
-    const rect = col.getBoundingClientRect();
-    const min = yToMinute(e.clientY - rect.top);
-    setDrag({ dayIndex, startMin: min, curMin: min });
-  };
-
-  const pointerMove = (dayIndex: number) => (e: ReactPointerEvent<HTMLDivElement>) => {
-    if (!drag || drag.dayIndex !== dayIndex) return;
-    const col = colRefs.current[dayIndex];
-    if (!col) return;
-    const rect = col.getBoundingClientRect();
-    const min = yToMinute(e.clientY - rect.top);
-    setDrag((d) => (d ? { ...d, curMin: min } : d));
-  };
-
-  const pointerUp = (dayIndex: number) => () => {
-    if (!drag || drag.dayIndex !== dayIndex) return;
-    let startMin = Math.min(drag.startMin, drag.curMin);
-    let endMin = Math.max(drag.startMin, drag.curMin);
-    if (endMin - startMin < 15) endMin = startMin + 60;
-    setDrag(null);
-    openCreate(days[dayIndex], minutesToTime(startMin), minutesToTime(endMin));
-  };
-
   return (
     <div className="timeline-wrap">
       <div className="timeline-header-row">
@@ -227,39 +195,35 @@ export default function WeekTimeline({
           ))}
         </div>
 
-        {days.map((iso, dayIndex) => {
+        {days.map((iso) => {
           const info = layout.get(iso);
           const timed = info?.timed ?? [];
           const lanes = info?.lanes ?? 1;
-          const isDragging = drag?.dayIndex === dayIndex;
-          const dragTop = isDragging ? minuteToY(Math.min(drag!.startMin, drag!.curMin)) : 0;
-          const dragHeight = isDragging
-            ? Math.max(minuteToY(Math.max(drag!.startMin, drag!.curMin)) - dragTop, 14)
-            : 0;
 
           return (
-            <div
-              key={iso}
-              ref={(el) => {
-                colRefs.current[dayIndex] = el;
-              }}
-              className={`timeline-col ${isToday(iso) ? 'is-today' : ''}`}
-              style={{ height: TIMELINE_HEIGHT }}
-              onPointerDown={pointerDown(dayIndex)}
-              onPointerMove={pointerMove(dayIndex)}
-              onPointerUp={pointerUp(dayIndex)}
-              onPointerCancel={() => setDrag(null)}
-            >
+            <div key={iso} className={`timeline-col ${isToday(iso) ? 'is-today' : ''}`} style={{ height: TIMELINE_HEIGHT }}>
+              {TIMELINE_HOURS.map((h) => {
+                const hourEnd = Math.min(h + 1, TIMELINE_END_HOUR);
+                return (
+                  <button
+                    key={h}
+                    type="button"
+                    className="timeline-slot"
+                    style={{ top: minuteToY(h * 60), height: minuteToY(hourEnd * 60) - minuteToY(h * 60) }}
+                    title={t.timeline.tapHint}
+                    onClick={() => openCreate(iso, minutesToTime(h * 60), minutesToTime(hourEnd * 60))}
+                  >
+                    <Plus size={13} strokeWidth={2} />
+                  </button>
+                );
+              })}
+
               {TIMELINE_HOURS.map((h) => (
                 <div key={h} className="timeline-hour-line" style={{ top: minuteToY(h * 60) }} />
               ))}
 
               {isToday(iso) && nowMinute >= TIMELINE_START_HOUR * 60 && (
                 <div className="timeline-now-line" style={{ top: minuteToY(nowMinute) }} />
-              )}
-
-              {isDragging && (
-                <div className="timeline-block timeline-block-draft" style={{ top: dragTop, height: dragHeight }} />
               )}
 
               {timed.map((entry) => {
@@ -280,11 +244,7 @@ export default function WeekTimeline({
                       left: `calc(${lane * width}% + 2px)`,
                       width: `calc(${width}% - 4px)`,
                     }}
-                    onPointerDown={(e) => e.stopPropagation()}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      openEdit(iso, entry);
-                    }}
+                    onClick={() => openEdit(iso, entry)}
                     title={entry.content}
                   >
                     {entry.reminderMinutes !== null && <Bell size={10} strokeWidth={2} className="block-bell" />}

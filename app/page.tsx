@@ -7,6 +7,7 @@ import { useI18n } from '@/lib/i18n';
 import { useOverview } from '@/lib/useOverview';
 import { CollectionIcon, LOG_ICONS } from '@/components/icons';
 import RecentActivityList from '@/components/RecentActivityList';
+import TodayFocus from '@/components/TodayFocus';
 import type { Entry, IndexOverview } from '@/lib/types';
 
 /** Where tapping this entry on the Index page should take you — the exact
@@ -122,6 +123,8 @@ export default function IndexPage() {
           </div>
         </div>
       </header>
+
+      <TodayFocus />
 
       {data.dueForReview > 0 && (
         <Link href="/review" className="review-banner">

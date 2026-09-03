@@ -209,6 +209,22 @@ const en = {
       gray: 'Gray',
     },
   },
+  todayFocus: {
+    title: "Today's focus",
+    subtitleCount: (n: number) => `${n} ${n === 1 ? 'thing' : 'things'} to do today`,
+    percentDone: 'done today',
+    emptyTitle: 'Nothing on the books for today',
+    emptySubtitle: 'Add the first thing to do today',
+    addPlaceholder: 'Add something for today…',
+    doneSectionTitle: (n: number) => `${n} done`,
+    messages: {
+      start: "Let's get started!",
+      going: 'Keep going!',
+      almost: 'Almost there!',
+      complete: 'Nicely done — everything today is complete!',
+    },
+    noTime: 'No time set',
+  },
   reminders: {
     bellTitle: 'Reminders',
     enable: 'Turn on reminders',

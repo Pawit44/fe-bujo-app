@@ -206,6 +206,22 @@ const th: Dictionary = {
       gray: 'เทา',
     },
   },
+  todayFocus: {
+    title: 'วันนี้ต้องทำอะไรบ้าง',
+    subtitleCount: (n: number) => `${n} งานที่ต้องทำวันนี้`,
+    percentDone: 'ของวันนี้เสร็จแล้ว',
+    emptyTitle: 'วันนี้ยังไม่มีงานกำหนดไว้',
+    emptySubtitle: 'เพิ่มงานแรกของวันนี้เลย',
+    addPlaceholder: 'เพิ่มงานสำหรับวันนี้…',
+    doneSectionTitle: (n: number) => `เสร็จแล้ว ${n} งาน`,
+    messages: {
+      start: 'เริ่มกันเลย!',
+      going: 'ลุยต่อไป!',
+      almost: 'ใกล้ครบแล้ว!',
+      complete: 'เก่งมาก! ทำครบทุกงานวันนี้แล้ว',
+    },
+    noTime: 'ไม่ระบุเวลา',
+  },
   reminders: {
     bellTitle: 'การแจ้งเตือน',
     enable: 'เปิดการแจ้งเตือน',
