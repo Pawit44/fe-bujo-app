@@ -1,20 +1,24 @@
 'use client';
 
-import { Suspense, useEffect, useMemo, useState } from 'react';
+import { Suspense, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import EntryList from '@/components/EntryList';
 import ErrorToast from '@/components/ErrorToast';
 import {
+  addDays,
   addMonths,
   currentMonthISO,
   formatDayLong,
   formatMonth,
+  formatRange,
+  fromISODate,
   isMonthInRange,
   isToday,
   isWeekend,
   monthGrid,
-  todayISO,
+  startOfWeek,
+  toISODate,
 } from '@/lib/date';
 import { useCollections } from '@/lib/useCollections';
 import { useEntries } from '@/lib/useEntries';
@@ -27,16 +31,12 @@ const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
  * page — without it, a task added a few months out was unreachable from a
  * click: the page always opened on the current month, and there was no way
  * to jump straight to where the entry actually lives. */
-function initialView(params: URLSearchParams): { month: string; selected: string } {
+function initialMonth(params: URLSearchParams): string {
   const dateParam = params.get('date');
-  if (dateParam && DATE_RE.test(dateParam) && isMonthInRange(dateParam.slice(0, 7))) {
-    return { month: dateParam.slice(0, 7), selected: dateParam };
-  }
+  if (dateParam && DATE_RE.test(dateParam) && isMonthInRange(dateParam.slice(0, 7))) return dateParam.slice(0, 7);
   const monthParam = params.get('month');
-  if (monthParam && MONTH_RE.test(monthParam) && isMonthInRange(monthParam)) {
-    return { month: monthParam, selected: `${monthParam}-01` };
-  }
-  return { month: currentMonthISO(), selected: todayISO() };
+  if (monthParam && MONTH_RE.test(monthParam) && isMonthInRange(monthParam)) return monthParam;
+  return currentMonthISO();
 }
 
 // useSearchParams needs a Suspense boundary, otherwise the whole route opts
@@ -52,22 +52,29 @@ export default function MonthlyLogPage() {
 function MonthlyLog() {
   const { t } = useI18n();
   const searchParams = useSearchParams();
-  const [{ month: initialMonth, selected: initialSelected }] = useState(() => initialView(searchParams));
-  const [month, setMonth] = useState(initialMonth);
-  const [selected, setSelected] = useState<string>(initialSelected);
+  const [month, setMonth] = useState(() => initialMonth(searchParams));
+  // Day mode: a cell is one day, click opens that day's Daily log. Week
+  // mode: a cell's whole calendar row is one unit — hovering any day in it
+  // (blank lead/trail cells included) highlights the row, and clicking
+  // anywhere in it opens that week's Weekly log. Either way, managing the
+  // entries themselves happens on the page it links to, not here.
+  const [mode, setMode] = useState<'day' | 'week'>('day');
+  const [hoverRow, setHoverRow] = useState<number | null>(null);
   const collections = useCollections();
 
   const { blanks, days } = useMemo(() => monthGrid(month), [month]);
   const rangeStart = days[0];
   const rangeEnd = days[days.length - 1];
+  const weekStartOfMonth = useMemo(() => startOfWeek(fromISODate(`${month}-01`)), [month]);
+  // One flat cell list, blanks first — a cell's index in it divided by 7 is
+  // always its calendar row, whether that cell is a real day or a blank.
+  const cells = useMemo<(string | null)[]>(
+    () => [...Array.from({ length: blanks }, () => null), ...days],
+    [blanks, days],
+  );
 
   const monthly = useEntries({ logKind: 'monthly', month });
   const daily = useEntries({ logKind: 'weekly', from: rangeStart, to: rangeEnd });
-
-  // Keep the selected day inside the month being viewed.
-  useEffect(() => {
-    if (!selected.startsWith(month)) setSelected(days[0]);
-  }, [month, selected, days]);
 
   const countByDay = useMemo(() => {
     const map: Record<string, number> = {};
@@ -78,8 +85,14 @@ function MonthlyLog() {
     return map;
   }, [daily.entries]);
 
-  const selectedEntries = daily.entries.filter((e) => e.date === selected);
   const open = monthly.entries.filter((e) => e.status === 'open').length;
+
+  const weekHrefForRow = (row: number) => `/weekly?date=${toISODate(addDays(weekStartOfMonth, row * 7))}`;
+  const weekRangeForRow = (row: number) => {
+    const start = toISODate(addDays(weekStartOfMonth, row * 7));
+    const end = toISODate(addDays(weekStartOfMonth, row * 7 + 6));
+    return formatRange(start, end, t.dates.months);
+  };
 
   return (
     <div className="page">
@@ -93,6 +106,14 @@ function MonthlyLog() {
         </div>
 
         <div className="head-actions">
+          <div className="view-toggle" role="group" aria-label="View">
+            <button type="button" className={mode === 'day' ? 'on' : ''} onClick={() => setMode('day')}>
+              {t.monthly.viewByDay}
+            </button>
+            <button type="button" className={mode === 'week' ? 'on' : ''} onClick={() => setMode('week')}>
+              {t.monthly.viewByWeek}
+            </button>
+          </div>
           <button
             className="btn btn-icon"
             onClick={() => setMonth(addMonths(month, -1))}
@@ -116,72 +137,68 @@ function MonthlyLog() {
       </header>
 
       <div className="monthly-layout">
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
-          <section className="card cal">
-            <div className="cal-weekdays">
-              {t.dates.days.map((d) => (
-                <div key={d}>{d.slice(0, 3)}</div>
-              ))}
-            </div>
-            <div className="cal-days">
-              {Array.from({ length: blanks }, (_, i) => (
-                <div key={`b${i}`} className="cal-day blank" />
-              ))}
-              {days.map((iso) => {
-                const n = countByDay[iso] ?? 0;
-                const day = Number(iso.slice(-2));
-                return (
-                  <button
-                    key={iso}
-                    type="button"
-                    className={[
-                      'cal-day',
-                      isToday(iso) ? 'today' : '',
-                      selected === iso ? 'selected' : '',
-                      isWeekend(iso) ? 'weekend' : '',
-                    ]
-                      .filter(Boolean)
-                      .join(' ')}
-                    onClick={() => setSelected(iso)}
-                    title={`${formatDayLong(iso, t.dates.months, t.dates.days)} — ${n} ${t.common.open}`}
-                  >
-                    {day}
-                    <span className="cal-dots">
-                      {Array.from({ length: Math.min(n, 3) }, (_, i) => (
-                        <i key={i} />
-                      ))}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-          </section>
+        <section className="card cal">
+          <div className="cal-weekdays">
+            {t.dates.days.map((d) => (
+              <div key={d}>{d.slice(0, 3)}</div>
+            ))}
+          </div>
+          <div className="cal-days" onMouseLeave={() => setHoverRow(null)}>
+            {cells.map((iso, i) => {
+              const row = Math.floor(i / 7);
+              const weekHover = mode === 'week' && hoverRow === row;
 
-          <section className="card">
-            <div className="card-head">
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <h2 className="card-title">{formatDayLong(selected, t.dates.months, t.dates.days)}</h2>
-                {isToday(selected) && <span className="pill">{t.common.today.toLowerCase()}</span>}
-              </div>
-              <Link href={`/daily?date=${selected}`} className="btn btn-sm btn-ghost">
-                {t.todayFocus.goToDailyLogCta}
-              </Link>
-            </div>
-            <div style={{ padding: '10px 12px 14px' }}>
-              <EntryList
-                entries={selectedEntries}
-                collections={collections}
-                context={{ logKind: 'weekly', date: selected }}
-                onAdd={daily.add}
-                onToggle={daily.toggle}
-                onUpdate={daily.update}
-                onDelete={daily.remove}
-                onMigrate={daily.migrate}
-                onReorder={daily.reorder}
-              />
-            </div>
-          </section>
-        </div>
+              if (iso === null) {
+                if (mode === 'day') return <div key={`b${i}`} className="cal-day blank" />;
+                return (
+                  <Link
+                    key={`b${i}`}
+                    href={weekHrefForRow(row)}
+                    className={`cal-day ${weekHover ? 'week-hover' : ''}`}
+                    onMouseEnter={() => setHoverRow(row)}
+                    onFocus={() => setHoverRow(row)}
+                    onBlur={() => setHoverRow(null)}
+                    title={weekRangeForRow(row)}
+                  />
+                );
+              }
+
+              const n = countByDay[iso] ?? 0;
+              const day = Number(iso.slice(-2));
+              const classes = [
+                'cal-day',
+                isToday(iso) ? 'today' : '',
+                isWeekend(iso) ? 'weekend' : '',
+                weekHover ? 'week-hover' : '',
+              ]
+                .filter(Boolean)
+                .join(' ');
+
+              return (
+                <Link
+                  key={iso}
+                  href={mode === 'day' ? `/daily?date=${iso}` : weekHrefForRow(row)}
+                  className={classes}
+                  onMouseEnter={() => mode === 'week' && setHoverRow(row)}
+                  onFocus={() => mode === 'week' && setHoverRow(row)}
+                  onBlur={() => mode === 'week' && setHoverRow(null)}
+                  title={
+                    mode === 'day'
+                      ? `${formatDayLong(iso, t.dates.months, t.dates.days)} — ${n} ${t.common.open}`
+                      : weekRangeForRow(row)
+                  }
+                >
+                  {day}
+                  <span className="cal-dots">
+                    {Array.from({ length: Math.min(n, 3) }, (_, k) => (
+                      <i key={k} />
+                    ))}
+                  </span>
+                </Link>
+              );
+            })}
+          </div>
+        </section>
 
         <section className="card">
           <div className="card-head">

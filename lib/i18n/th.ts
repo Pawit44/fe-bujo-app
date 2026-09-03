@@ -144,15 +144,14 @@ const th: Dictionary = {
   },
   monthly: {
     eyebrow: 'บันทึกรายเดือน',
-    glance: 'ภาพรวมของเดือน — ปฏิทินด้านซ้าย งานของเดือนด้านขวา',
+    glance: 'ภาพรวมของเดือน — กดวันหรือสัปดาห์ที่ต้องการเพื่อเปิดไปจัดการ',
     openOfTotal: (open, total) => `ค้างอยู่ ${open} จาก ${total} รายการในเดือนนี้`,
     previousMonth: 'เดือนก่อนหน้า',
     nextMonth: 'เดือนถัดไป',
     thisMonth: 'เดือนนี้',
     tasksThisMonth: 'งานในเดือนนี้',
-    addToDay: 'เพิ่มรายการในวันนี้…',
-    addTaskForMonth: 'เพิ่มงานของเดือน…',
-    noMonthlyTasksYet: 'ยังไม่มีงานรายเดือน — เริ่มรายการแรกด้านล่าง',
+    viewByDay: 'วัน',
+    viewByWeek: 'สัปดาห์',
   },
   daily: {
     eyebrow: 'บันทึกประจำวัน',

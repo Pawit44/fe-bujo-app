@@ -147,15 +147,14 @@ const en = {
   },
   monthly: {
     eyebrow: 'Monthly Log',
-    glance: 'The month at a glance — the calendar on the left, the month’s tasks on the right.',
+    glance: 'The month at a glance — click a day or a week to open and manage it.',
     openOfTotal: (open: number, total: number) => `${open} open of ${total} entries this month.`,
     previousMonth: 'Previous month',
     nextMonth: 'Next month',
     thisMonth: 'This month',
     tasksThisMonth: 'Tasks this month',
-    addToDay: 'Add to this day…',
-    addTaskForMonth: 'Add a task for the month…',
-    noMonthlyTasksYet: 'No monthly tasks yet — the first one goes below.',
+    viewByDay: 'Day',
+    viewByWeek: 'Week',
   },
   daily: {
     eyebrow: 'Daily Log',

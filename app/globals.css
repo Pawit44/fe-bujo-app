@@ -2049,55 +2049,49 @@ ol {
    -------------------------------------------------------------------------- */
 
 .monthly-layout {
-  display: grid;
-  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+  display: flex;
+  flex-direction: column;
   gap: 22px;
-  align-items: start;
-}
-
-@media (max-width: 900px) {
-  .monthly-layout {
-    grid-template-columns: 1fr;
-  }
 }
 
 .cal {
-  padding: 18px 20px 22px;
+  padding: 22px 24px 26px;
 }
 
 .cal-weekdays,
 .cal-days {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 4px;
+  gap: 6px;
 }
 
 .cal-weekdays div {
   text-align: center;
-  font-size: 10.5px;
+  font-size: 11.5px;
   font-weight: 600;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--ink-faint);
-  padding-bottom: 8px;
+  color: var(--ink-muted);
+  padding-bottom: 10px;
 }
 
 .cal-day {
   aspect-ratio: 1;
-  border-radius: 10px;
+  border-radius: 14px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 4px;
-  font-size: 13px;
+  gap: 6px;
+  font-size: 17px;
   font-variant-numeric: tabular-nums;
   color: var(--ink-soft);
-  transition: background var(--fast), color var(--fast);
+  transition: background var(--fast), color var(--fast), transform var(--fast);
 }
 
 .cal-day:hover {
   background: var(--paper-hover);
+  transform: translateY(-1px);
 }
 
 .cal-day.weekend {
@@ -2110,25 +2104,32 @@ ol {
   font-weight: 600;
 }
 
-.cal-day.selected:not(.today) {
-  background: var(--accent-soft);
-  color: var(--accent);
-  font-weight: 600;
-}
-
 .cal-day.blank {
   pointer-events: none;
 }
 
+/* Week mode: hovering (or keyboard-focusing) any day tints every cell in
+   that same calendar row — including the blank lead/trail cells — so the
+   whole week reads as one clickable unit before the click ever happens. */
+.cal-day.week-hover {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.cal-day.today.week-hover {
+  background: var(--ink);
+  color: var(--paper);
+}
+
 .cal-dots {
   display: flex;
-  gap: 2px;
-  height: 4px;
+  gap: 3px;
+  height: 5px;
 }
 
 .cal-dots i {
-  width: 3.5px;
-  height: 3.5px;
+  width: 5px;
+  height: 5px;
   border-radius: 50%;
   background: var(--ink-faint);
 }
