@@ -4,7 +4,7 @@
 
 export const TIMELINE_START_HOUR = 6;
 export const TIMELINE_END_HOUR = 24;
-export const HOUR_HEIGHT = 48;
+export const HOUR_HEIGHT = 60;
 export const SNAP_MINUTES = 15;
 
 export const TIMELINE_TOTAL_MINUTES = (TIMELINE_END_HOUR - TIMELINE_START_HOUR) * 60;

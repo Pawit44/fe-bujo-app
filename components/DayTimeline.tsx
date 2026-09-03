@@ -152,9 +152,16 @@ export default function DayTimeline({
 
   return (
     <div className="timeline-wrap day-timeline">
-      <div className="day-timeline-allrow">
-        <div className="timeline-corner-label">{t.timeline.allDay}</div>
-        <div className="day-timeline-allcell">
+      {/* One grid for the sticky all-day row and the hour grid below it —
+          both share the same two column tracks, computed once. Splitting
+          these into two separate grids (one scrolling, one not) is what
+          caused the day column to drift out of alignment with the hour
+          gutter: the scrolling one loses width to its own scrollbar, the
+          static one doesn't, so their "same" 1fr column ends up two
+          different widths. */}
+      <div className="day-timeline-scroll" ref={bodyRef}>
+        <div className="day-timeline-allrow-label">{t.timeline.allDay}</div>
+        <div className="day-timeline-allrow-cell">
           {untimed.map((entry) => (
             <button
               key={entry.id}
@@ -172,13 +179,11 @@ export default function DayTimeline({
             title={t.eventEditor.addTitle}
             onClick={() => openCreate('09:00', '10:00')}
           >
-            <Plus size={12} strokeWidth={2} />
+            <Plus size={14} strokeWidth={2} />
           </button>
         </div>
-      </div>
 
-      <div className="day-timeline-body" ref={bodyRef}>
-        <div className="timeline-gutter" style={{ height: TIMELINE_HEIGHT }}>
+        <div className="timeline-gutter day-timeline-gutter" style={{ height: TIMELINE_HEIGHT }}>
           {TIMELINE_HOURS.map((h) => (
             <div key={h} className="timeline-hour-label" style={{ top: minuteToY(h * 60) }}>
               {String(h).padStart(2, '0')}:00
