@@ -35,11 +35,12 @@ export default function Sidebar() {
     useReminderPreference();
   useReminderEngine(remindersEnabled);
 
-  const LOGS = [
-    { href: '/', icon: LOG_ICONS.index, label: t.sidebar.logs.index, count: 0 },
-    { href: '/future', icon: LOG_ICONS.future, label: t.sidebar.logs.future, count: 0 },
+  // Weekly is the app's main event — where daily capture actually happens —
+  // so it gets its own prominent row instead of sitting in a plain list
+  // alongside logs that are opened far less often.
+  const SECONDARY_LOGS = [
     { href: '/monthly', icon: LOG_ICONS.monthly, label: t.sidebar.logs.monthly, count: 0 },
-    { href: '/weekly', icon: LOG_ICONS.weekly, label: t.sidebar.logs.weekly, count: 0 },
+    { href: '/future', icon: LOG_ICONS.future, label: t.sidebar.logs.future, count: 0 },
     // The migration ritual, surfaced as a badge — a number here is the whole
     // point: it's what tells the reader there's something to reflect on
     // without having to open every log to check.
@@ -147,8 +148,27 @@ export default function Sidebar() {
       </div>
 
       <nav className="nav-group">
-        <div className="nav-label">{t.sidebar.logsGroup}</div>
-        {LOGS.map((item) => (
+        <Link href="/" className={`nav-item ${isActive('/') ? 'active' : ''}`}>
+          <span className="nav-icon">
+            <LOG_ICONS.index size={17} strokeWidth={1.8} />
+          </span>
+          {t.sidebar.logs.index}
+        </Link>
+
+        <Link href="/weekly" className={`nav-item nav-item-primary ${isActive('/weekly') ? 'active' : ''}`}>
+          <span className="nav-icon">
+            <LOG_ICONS.weekly size={19} strokeWidth={1.8} />
+          </span>
+          <span className="nav-item-primary-text">
+            {t.sidebar.logs.weekly}
+            <span className="nav-item-primary-sub">{t.sidebar.weeklyHint}</span>
+          </span>
+        </Link>
+      </nav>
+
+      <nav className="nav-group">
+        <div className="nav-label">{t.sidebar.moreGroup}</div>
+        {SECONDARY_LOGS.map((item) => (
           <Link key={item.href} href={item.href} className={`nav-item ${isActive(item.href) ? 'active' : ''}`}>
             <span className="nav-icon">
               <item.icon size={17} strokeWidth={1.8} />

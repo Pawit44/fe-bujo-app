@@ -1,10 +1,11 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { Bell, Plus } from 'lucide-react';
+import { Bell, ChevronLeft, ChevronRight, Plus } from 'lucide-react';
 import EventEditor, { type EventDraft } from './EventEditor';
 import { useI18n } from '@/lib/i18n';
 import { formatDayLong, isToday } from '@/lib/date';
+import { useMediaQuery } from '@/lib/useMediaQuery';
 import {
   TIMELINE_END_HOUR,
   TIMELINE_HEIGHT,
@@ -46,13 +47,22 @@ export default function WeekTimeline({
   const { t } = useI18n();
   const [editor, setEditor] = useState<EditorState | null>(null);
   const [now, setNow] = useState(() => new Date());
+  const isNarrow = useMediaQuery('(max-width: 700px)');
+  const [dayIndex, setDayIndex] = useState(() => Math.max(0, days.findIndex((d) => isToday(d))));
 
   useEffect(() => {
     const id = setInterval(() => setNow(new Date()), 60_000);
     return () => clearInterval(id);
   }, []);
 
+  // The week itself changed (prev/next-week nav) — re-anchor the mobile
+  // single-day view to today-if-visible, otherwise the first day of it.
+  useEffect(() => {
+    setDayIndex(Math.max(0, days.findIndex((d) => isToday(d))));
+  }, [days]);
+
   const nowMinute = now.getHours() * 60 + now.getMinutes();
+  const visibleDays = isNarrow ? [days[dayIndex]] : days;
 
   const layout = useMemo(() => {
     const map = new Map<string, { timed: Entry[]; untimed: Entry[]; lane: Map<number, number>; lanes: number }>();
@@ -145,10 +155,35 @@ export default function WeekTimeline({
   };
 
   return (
-    <div className="timeline-wrap">
+    <div className={`timeline-wrap ${isNarrow ? 'is-single-day' : ''}`}>
+      {isNarrow && (
+        <div className="timeline-day-switcher">
+          <button
+            type="button"
+            className="btn btn-icon"
+            disabled={dayIndex <= 0}
+            onClick={() => setDayIndex((i) => Math.max(0, i - 1))}
+          >
+            <ChevronLeft size={16} strokeWidth={1.8} />
+          </button>
+          <div className="timeline-day-switcher-label">
+            {formatDayLong(days[dayIndex], t.dates.months, t.dates.days)}
+            {isToday(days[dayIndex]) && <span className="timeline-day-switcher-today">{t.common.today}</span>}
+          </div>
+          <button
+            type="button"
+            className="btn btn-icon"
+            disabled={dayIndex >= days.length - 1}
+            onClick={() => setDayIndex((i) => Math.min(days.length - 1, i + 1))}
+          >
+            <ChevronRight size={16} strokeWidth={1.8} />
+          </button>
+        </div>
+      )}
+
       <div className="timeline-header-row">
         <div className="timeline-corner" />
-        {days.map((iso) => (
+        {visibleDays.map((iso) => (
           <div key={iso} className={`timeline-header-cell ${isToday(iso) ? 'is-today' : ''}`}>
             <div className="timeline-day-name">{formatDayLong(iso, t.dates.months, t.dates.days).split(' ')[0]}</div>
             <div className="timeline-day-num">{iso.slice(8)}</div>
@@ -158,7 +193,7 @@ export default function WeekTimeline({
 
       <div className="timeline-alldays-row">
         <div className="timeline-corner-label">{t.timeline.allDay}</div>
-        {days.map((iso, i) => {
+        {visibleDays.map((iso) => {
           const untimed = layout.get(iso)?.untimed ?? [];
           return (
             <div key={iso} className="timeline-allday-cell">
@@ -195,7 +230,7 @@ export default function WeekTimeline({
           ))}
         </div>
 
-        {days.map((iso) => {
+        {visibleDays.map((iso) => {
           const info = layout.get(iso);
           const timed = info?.timed ?? [];
           const lanes = info?.lanes ?? 1;

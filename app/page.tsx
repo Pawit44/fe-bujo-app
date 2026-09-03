@@ -139,53 +139,91 @@ export default function IndexPage() {
         </Link>
       )}
 
-      <section className="grid grid-3" style={{ marginBottom: 26 }}>
-        {data.logs.map((log) => {
-          const meta = LOG_META[log.key];
-          const pct = log.total ? Math.round((log.done / log.total) * 100) : 0;
-          const preview = previewFor(log.key, data);
-          return (
-            <Link key={log.key} href={preview ? entryHref(preview) : meta.href} className="log-card">
-              <div className="log-card-top">
-                <div className="log-glyph">
-                  <meta.Icon size={19} strokeWidth={1.8} />
+      {(() => {
+        const weeklyLog = data.logs.find((l) => l.key === 'weekly');
+        const otherLogs = data.logs.filter((l) => l.key !== 'weekly');
+        const weeklyMeta = LOG_META.weekly;
+        const weeklyPct = weeklyLog?.total ? Math.round((weeklyLog.done / weeklyLog.total) * 100) : 0;
+        const weeklyPreview = weeklyLog ? previewFor('weekly', data) : undefined;
+
+        return (
+          <>
+            {weeklyLog && (
+              <Link
+                href={weeklyPreview ? entryHref(weeklyPreview) : weeklyMeta.href}
+                className="log-card-featured"
+                style={{ marginBottom: 18 }}
+              >
+                <div className="log-card-featured-glyph">
+                  <weeklyMeta.Icon size={26} strokeWidth={1.6} />
                 </div>
-                <span className="pill">
-                  {log.open} {t.common.open}
-                </span>
-              </div>
-              <div>
-                <div className="log-name">{meta.label}</div>
-                <div className="muted" style={{ fontSize: 12.5, marginTop: 2 }}>
-                  {log.key === 'monthly'
-                    ? formatMonth(data.month, t.dates.months)
-                    : log.key === 'weekly'
-                      ? formatRange(data.weekStart, data.weekEnd, t.dates.months)
-                      : meta.blurb}
+                <div className="log-card-featured-body">
+                  <div className="log-card-featured-eyebrow">{t.index.weeklyFeaturedEyebrow}</div>
+                  <div className="log-card-featured-name">{weeklyMeta.label}</div>
+                  <div className="log-card-featured-sub">{formatRange(data.weekStart, data.weekEnd, t.dates.months)}</div>
+                  {weeklyPreview && (
+                    <div className="log-card-featured-preview" title={weeklyPreview.content}>
+                      “{weeklyPreview.content}”
+                    </div>
+                  )}
                 </div>
-                {/* The point of this line: answer "which one?" right where the
-                    count is shown, instead of making that a click-through question. */}
-                {preview && (
-                  <div className="log-card-preview" title={preview.content}>
-                    “{preview.content}”
+                <div className="log-card-featured-stats">
+                  <div className="log-card-featured-pct">{weeklyPct}%</div>
+                  <div className="bar" style={{ width: 84 }}>
+                    <span style={{ width: `${weeklyPct}%` }} />
                   </div>
-                )}
-              </div>
-              <div className="bar">
-                <span style={{ width: `${pct}%` }} />
-              </div>
-              <div className="stat-row">
-                <span>
-                  <b>{log.total}</b> {t.common.entries}
-                </span>
-                <span>
-                  <b>{log.done}</b> {t.common.done}
-                </span>
-              </div>
-            </Link>
-          );
-        })}
-      </section>
+                  <div className="muted" style={{ fontSize: 11.5 }}>
+                    {weeklyLog.done}/{weeklyLog.total} {t.common.done}
+                  </div>
+                </div>
+                <span className="log-card-featured-cta">{t.index.weeklyFeaturedCta} →</span>
+              </Link>
+            )}
+
+            <section className="grid grid-2" style={{ marginBottom: 26 }}>
+              {otherLogs.map((log) => {
+                const meta = LOG_META[log.key];
+                const pct = log.total ? Math.round((log.done / log.total) * 100) : 0;
+                const preview = previewFor(log.key, data);
+                return (
+                  <Link key={log.key} href={preview ? entryHref(preview) : meta.href} className="log-card log-card-compact">
+                    <div className="log-card-top">
+                      <div className="log-glyph log-glyph-sm">
+                        <meta.Icon size={16} strokeWidth={1.8} />
+                      </div>
+                      <span className="pill">
+                        {log.open} {t.common.open}
+                      </span>
+                    </div>
+                    <div>
+                      <div className="log-name">{meta.label}</div>
+                      <div className="muted" style={{ fontSize: 12.5, marginTop: 2 }}>
+                        {log.key === 'monthly' ? formatMonth(data.month, t.dates.months) : meta.blurb}
+                      </div>
+                      {preview && (
+                        <div className="log-card-preview" title={preview.content}>
+                          “{preview.content}”
+                        </div>
+                      )}
+                    </div>
+                    <div className="bar">
+                      <span style={{ width: `${pct}%` }} />
+                    </div>
+                    <div className="stat-row">
+                      <span>
+                        <b>{log.total}</b> {t.common.entries}
+                      </span>
+                      <span>
+                        <b>{log.done}</b> {t.common.done}
+                      </span>
+                    </div>
+                  </Link>
+                );
+              })}
+            </section>
+          </>
+        );
+      })()}
 
       <div className="grid grid-2">
         <section className="card">

@@ -41,6 +41,8 @@ const th: Dictionary = {
   sidebar: {
     brandSub: 'บันทึกบูโจ',
     logsGroup: 'บันทึก',
+    moreGroup: 'อื่นๆ',
+    weeklyHint: 'บันทึกประจำวันของคุณ',
     collectionsGroup: 'คอลเลกชัน',
     newCollection: 'สร้างคอลเลกชันใหม่',
     openMenu: 'เปิดเมนู',
@@ -118,6 +120,8 @@ const th: Dictionary = {
     recentActivityHint: 'แตะรายการเพื่อไปที่หน้าที่มันอยู่โดยตรง',
     keyTitle: 'สัญลักษณ์',
     couldNotReach: 'ไม่สามารถเชื่อมต่อ API ของบันทึกได้',
+    weeklyFeaturedEyebrow: 'บันทึกประจำวันของคุณ',
+    weeklyFeaturedCta: 'เปิดดู',
     reviewBanner: (n) => `มี ${n} รายการที่ควรทบทวนอีกครั้ง`,
     reviewBannerBlurb: 'งานจากวันและเดือนที่ผ่านไปแล้ว — ทำเครื่องหมายว่าเสร็จ ย้ายไปข้างหน้า หรือปล่อยผ่าน',
     reviewBannerCta: 'ทบทวนตอนนี้',
